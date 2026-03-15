@@ -1,0 +1,1626 @@
+[
+  {
+    "country": "India",
+    "title": "Directors and Chief Executives",
+    "slug": "121-directors-and-chief-executives",
+    "category": "management",
+    "nco2004_3d": "121",
+    "nco2015_3d": "112",
+    "employment_workers": 900000,
+    "worker_share": 0.2,
+    "median_monthly_earnings_inr": 145000,
+    "median_annual_earnings_inr": 1740000,
+    "vacancies_90d": 900,
+    "demand_index": 34,
+    "exposure": 7,
+    "exposure_confidence": 0.67,
+    "education_mix": {
+      "Below secondary": 2,
+      "Secondary": 10,
+      "Diploma/Certificate": 12,
+      "Graduate": 54,
+      "Postgraduate+": 22
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Leads large enterprises, business units, and complex organizations across finance, manufacturing, technology, logistics, and services.",
+    "task_line": "Allocates capital, sets strategy, reviews performance, coordinates senior teams, and manages external relationships.",
+    "ai_notes": "AI can accelerate reporting, planning, and analysis, but the role still depends on judgment, accountability, and negotiation in the real world.",
+    "sample_postings": [
+      "Business head for a multi-city retail operation with P&L ownership.",
+      "Chief operating role combining vendor management, compliance, and growth planning."
+    ],
+    "rationale": "AI will compress analysis, planning, and coordination layers around this role, but final accountability and organizational leadership remain human-intensive.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Other Department Managers",
+    "slug": "123-other-department-managers",
+    "category": "management",
+    "nco2004_3d": "123",
+    "nco2015_3d": "132",
+    "employment_workers": 2600000,
+    "worker_share": 0.59,
+    "median_monthly_earnings_inr": 78000,
+    "median_annual_earnings_inr": 936000,
+    "vacancies_90d": 2100,
+    "demand_index": 48,
+    "exposure": 6,
+    "exposure_confidence": 0.7,
+    "education_mix": {
+      "Below secondary": 2,
+      "Secondary": 10,
+      "Diploma/Certificate": 12,
+      "Graduate": 54,
+      "Postgraduate+": 22
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Runs operations, sales, HR, logistics, procurement, hospitality, and facility functions inside medium and large organizations.",
+    "task_line": "Turns strategy into staffing plans, vendor workflows, schedules, budgets, and team supervision.",
+    "ai_notes": "AI will automate reporting, scheduling, and workflow analysis, but a large share of the job still sits in people management and local execution.",
+    "sample_postings": [
+      "Operations manager for a warehousing network across North India.",
+      "Category manager for consumer goods procurement and channel coordination."
+    ],
+    "rationale": "The work contains a large digital coordination component, but execution still depends on human supervision, escalation handling, and relationships.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Computing Professionals",
+    "slug": "213-computing-professionals",
+    "category": "digital",
+    "nco2004_3d": "213",
+    "nco2015_3d": "251",
+    "employment_workers": 5200000,
+    "worker_share": 1.18,
+    "median_monthly_earnings_inr": 58000,
+    "median_annual_earnings_inr": 696000,
+    "vacancies_90d": 18500,
+    "demand_index": 89,
+    "exposure": 9,
+    "exposure_confidence": 0.84,
+    "education_mix": {
+      "Below secondary": 2,
+      "Secondary": 10,
+      "Diploma/Certificate": 12,
+      "Graduate": 54,
+      "Postgraduate+": 22
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Includes software developers, systems designers, product engineers, and other fully digital computing occupations.",
+    "task_line": "Builds software, tests systems, writes code, documents workflows, and coordinates with product and operations teams.",
+    "ai_notes": "The work product is digital and increasingly assisted by coding copilots, code generation, QA automation, and agentic workflow tooling.",
+    "sample_postings": [
+      "Full-stack developer for fintech APIs, internal dashboards, and release automation.",
+      "Platform engineer for cloud infrastructure, observability, and CI/CD reliability."
+    ],
+    "rationale": "This is one of the most exposed occupation groups because core tasks are digital, decomposable, and already seeing large productivity gains from AI.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Architects, Engineers and Related Professionals",
+    "slug": "214-architects-engineers-and-related-professionals",
+    "category": "engineering",
+    "nco2004_3d": "214",
+    "nco2015_3d": "214",
+    "employment_workers": 7400000,
+    "worker_share": 1.68,
+    "median_monthly_earnings_inr": 52000,
+    "median_annual_earnings_inr": 624000,
+    "vacancies_90d": 9600,
+    "demand_index": 71,
+    "exposure": 7,
+    "exposure_confidence": 0.76,
+    "education_mix": {
+      "Below secondary": 2,
+      "Secondary": 10,
+      "Diploma/Certificate": 12,
+      "Graduate": 54,
+      "Postgraduate+": 22
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Covers civil, mechanical, industrial, electrical, and design engineers along with technical professionals working on plans, drawings, and systems.",
+    "task_line": "Creates specifications, estimates, technical documents, calculations, and project coordination artefacts.",
+    "ai_notes": "AI will accelerate drafting, simulation setup, documentation, and design iteration, but site constraints, compliance, and physical deployment limit full automation.",
+    "sample_postings": [
+      "Civil design engineer for highways and urban drainage packages.",
+      "Industrial engineer for process optimization in automotive manufacturing."
+    ],
+    "rationale": "AI can speed up analysis and documentation substantially, but engineering work still carries physical-world, safety, and regulatory constraints.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Health Professionals (except nursing)",
+    "slug": "222-health-professionals-except-nursing",
+    "category": "healthcare",
+    "nco2004_3d": "222",
+    "nco2015_3d": "221",
+    "employment_workers": 2100000,
+    "worker_share": 0.48,
+    "median_monthly_earnings_inr": 68000,
+    "median_annual_earnings_inr": 816000,
+    "vacancies_90d": 6200,
+    "demand_index": 65,
+    "exposure": 5,
+    "exposure_confidence": 0.71,
+    "education_mix": {
+      "Below secondary": 1,
+      "Secondary": 14,
+      "Diploma/Certificate": 28,
+      "Graduate": 42,
+      "Postgraduate+": 15
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Includes physicians, dentists, pharmacists, and other diagnosis-heavy clinical professionals outside nursing.",
+    "task_line": "Evaluates patients, interprets evidence, documents care, and makes treatment decisions under regulatory and safety constraints.",
+    "ai_notes": "AI will support diagnostics, documentation, triage, and administrative work, but direct care, liability, and contextual judgment remain major barriers.",
+    "sample_postings": [
+      "General physician for an outpatient urban clinic with teleconsult support.",
+      "Hospital pharmacist managing dispensing, counselling, and stock compliance."
+    ],
+    "rationale": "AI will be highly useful in the information-processing parts of the job, but core care decisions and patient-facing work remain only moderately exposed.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Nursing Professionals",
+    "slug": "223-nursing-professionals",
+    "category": "healthcare",
+    "nco2004_3d": "223",
+    "nco2015_3d": "222",
+    "employment_workers": 3400000,
+    "worker_share": 0.77,
+    "median_monthly_earnings_inr": 32000,
+    "median_annual_earnings_inr": 384000,
+    "vacancies_90d": 7400,
+    "demand_index": 59,
+    "exposure": 4,
+    "exposure_confidence": 0.75,
+    "education_mix": {
+      "Below secondary": 1,
+      "Secondary": 14,
+      "Diploma/Certificate": 28,
+      "Graduate": 42,
+      "Postgraduate+": 15
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Delivers bedside care, monitoring, medication administration, patient counselling, and ward coordination across hospitals and clinics.",
+    "task_line": "Combines physical care, documentation, supervision, escalation, and continuous patient interaction.",
+    "ai_notes": "Documentation and care planning can be assisted by AI, but the job remains anchored in direct physical care and real-time human presence.",
+    "sample_postings": [
+      "Staff nurse for intensive care and post-operative ward rotation.",
+      "Community health nurse for maternal and child outreach visits."
+    ],
+    "rationale": "Nursing is only moderately exposed because AI helps the paperwork and monitoring layers, not the physical and interpersonal core of the occupation.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Other Teaching Professionals",
+    "slug": "233-other-teaching-professionals",
+    "category": "education",
+    "nco2004_3d": "233",
+    "nco2015_3d": "235",
+    "employment_workers": 9100000,
+    "worker_share": 2.06,
+    "median_monthly_earnings_inr": 27000,
+    "median_annual_earnings_inr": 324000,
+    "vacancies_90d": 5100,
+    "demand_index": 47,
+    "exposure": 6,
+    "exposure_confidence": 0.7,
+    "education_mix": {
+      "Below secondary": 4,
+      "Secondary": 18,
+      "Diploma/Certificate": 10,
+      "Graduate": 48,
+      "Postgraduate+": 20
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Includes school teachers, tutors, instructors, and other teaching roles outside higher education specialist tracks.",
+    "task_line": "Prepares lessons, explains concepts, evaluates work, manages classrooms, and interacts with parents or institutions.",
+    "ai_notes": "AI will automate lesson planning, grading support, and low-stakes explanation, but classroom management and social trust keep the role from becoming fully digital.",
+    "sample_postings": [
+      "Secondary mathematics teacher for CBSE curriculum and exam preparation.",
+      "Spoken English instructor for an urban skills training institute."
+    ],
+    "rationale": "AI will reshape content creation and assessment heavily, but live teaching, student management, and trust still require human presence.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Business Professionals",
+    "slug": "241-business-professionals",
+    "category": "business",
+    "nco2004_3d": "241",
+    "nco2015_3d": "241",
+    "employment_workers": 8800000,
+    "worker_share": 1.99,
+    "median_monthly_earnings_inr": 47000,
+    "median_annual_earnings_inr": 564000,
+    "vacancies_90d": 8600,
+    "demand_index": 76,
+    "exposure": 8,
+    "exposure_confidence": 0.82,
+    "education_mix": {
+      "Below secondary": 2,
+      "Secondary": 10,
+      "Diploma/Certificate": 12,
+      "Graduate": 54,
+      "Postgraduate+": 22
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Includes accountants, analysts, auditors, finance roles, HR specialists, and strategy-heavy office occupations.",
+    "task_line": "Produces reports, reconciliations, plans, policies, analyses, and stakeholder communications.",
+    "ai_notes": "A large share of the work is digital and document-centered, making it highly sensitive to language models and workflow automation.",
+    "sample_postings": [
+      "Financial analyst for budgeting, variance analysis, and board-ready reporting.",
+      "HR business partner handling policy drafting, recruiting analytics, and MIS dashboards."
+    ],
+    "rationale": "Core outputs are text, spreadsheets, and analysis, so AI can automate or compress a significant portion of daily work.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Computer Associate Professionals",
+    "slug": "312-computer-associate-professionals",
+    "category": "digital",
+    "nco2004_3d": "312",
+    "nco2015_3d": "351",
+    "employment_workers": 1700000,
+    "worker_share": 0.39,
+    "median_monthly_earnings_inr": 36000,
+    "median_annual_earnings_inr": 432000,
+    "vacancies_90d": 3900,
+    "demand_index": 82,
+    "exposure": 8,
+    "exposure_confidence": 0.78,
+    "education_mix": {
+      "Below secondary": 12,
+      "Secondary": 34,
+      "Diploma/Certificate": 16,
+      "Graduate": 30,
+      "Postgraduate+": 8
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Includes user-support technicians, system operators, and implementation-focused IT support roles.",
+    "task_line": "Resolves incidents, configures systems, supports users, monitors infrastructure, and documents fixes.",
+    "ai_notes": "Routine support, knowledge retrieval, and scripting work are increasingly handled by AI assistants and automation platforms.",
+    "sample_postings": [
+      "L2 support engineer for network operations and user issue triage.",
+      "ERP implementation support role with ticket handling and documentation."
+    ],
+    "rationale": "The role is not as exposed as software engineering, but a large share of repetitive troubleshooting and documentation is automatable.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Secretaries and Keyboard-Operating Clerks",
+    "slug": "411-secretaries-and-keyboard-operating-clerks",
+    "category": "clerical",
+    "nco2004_3d": "411",
+    "nco2015_3d": "412",
+    "employment_workers": 5900000,
+    "worker_share": 1.34,
+    "median_monthly_earnings_inr": 22000,
+    "median_annual_earnings_inr": 264000,
+    "vacancies_90d": 3100,
+    "demand_index": 44,
+    "exposure": 8,
+    "exposure_confidence": 0.83,
+    "education_mix": {
+      "Below secondary": 12,
+      "Secondary": 34,
+      "Diploma/Certificate": 16,
+      "Graduate": 30,
+      "Postgraduate+": 8
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Performs office coordination, typing, scheduling, record maintenance, and administrative support work.",
+    "task_line": "Manages email, documents, calendars, filings, and repetitive office communications.",
+    "ai_notes": "Administrative text work and routine coordination are increasingly handled by AI-native office tooling and workflow automation.",
+    "sample_postings": [
+      "Executive assistant handling scheduling, correspondence, and meeting notes.",
+      "Back-office operator for documentation, data entry, and workflow tracking."
+    ],
+    "rationale": "The occupation is highly exposed because much of the work is routine digital coordination and document handling.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Numerical Clerks",
+    "slug": "412-numerical-clerks",
+    "category": "clerical",
+    "nco2004_3d": "412",
+    "nco2015_3d": "431",
+    "employment_workers": 8300000,
+    "worker_share": 1.88,
+    "median_monthly_earnings_inr": 24000,
+    "median_annual_earnings_inr": 288000,
+    "vacancies_90d": 4700,
+    "demand_index": 57,
+    "exposure": 8,
+    "exposure_confidence": 0.84,
+    "education_mix": {
+      "Below secondary": 12,
+      "Secondary": 34,
+      "Diploma/Certificate": 16,
+      "Graduate": 30,
+      "Postgraduate+": 8
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Covers accounts clerks, payroll staff, billing operators, bookkeepers, and transaction-processing roles.",
+    "task_line": "Processes invoices, reconciles ledgers, updates payrolls, and records repetitive financial transactions.",
+    "ai_notes": "These workflows are highly structured and sit directly in the path of spreadsheet automation, OCR, and LLM-assisted accounting tooling.",
+    "sample_postings": [
+      "Accounts executive for billing, GST entries, and vendor reconciliation.",
+      "Payroll clerk managing attendance imports and monthly salary processing."
+    ],
+    "rationale": "Routine numerical processing and document-driven bookkeeping are among the most compressible office workflows.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Client Information Clerks",
+    "slug": "422-client-information-clerks",
+    "category": "service-office",
+    "nco2004_3d": "422",
+    "nco2015_3d": "422",
+    "employment_workers": 6700000,
+    "worker_share": 1.52,
+    "median_monthly_earnings_inr": 23000,
+    "median_annual_earnings_inr": 276000,
+    "vacancies_90d": 8200,
+    "demand_index": 68,
+    "exposure": 7,
+    "exposure_confidence": 0.78,
+    "education_mix": {
+      "Below secondary": 12,
+      "Secondary": 34,
+      "Diploma/Certificate": 16,
+      "Graduate": 30,
+      "Postgraduate+": 8
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Includes reception roles, customer support desks, call-center support, and front-office information handling.",
+    "task_line": "Answers queries, updates records, routes requests, and follows scripted service workflows.",
+    "ai_notes": "Voice bots, chat assistants, and automated workflows will absorb more first-line support, though escalation-heavy work will remain.",
+    "sample_postings": [
+      "Customer support associate for omnichannel complaint resolution.",
+      "Front-office executive handling walk-in queries and CRM updates."
+    ],
+    "rationale": "A large part of first-line customer communication is structured and scriptable, making this group highly exposed.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "House Keeping and Restaurant Services Workers",
+    "slug": "512-house-keeping-and-restaurant-services-workers",
+    "category": "hospitality",
+    "nco2004_3d": "512",
+    "nco2015_3d": "513",
+    "employment_workers": 9600000,
+    "worker_share": 2.18,
+    "median_monthly_earnings_inr": 17000,
+    "median_annual_earnings_inr": 204000,
+    "vacancies_90d": 6400,
+    "demand_index": 52,
+    "exposure": 3,
+    "exposure_confidence": 0.74,
+    "education_mix": {
+      "Below secondary": 36,
+      "Secondary": 36,
+      "Diploma/Certificate": 11,
+      "Graduate": 14,
+      "Postgraduate+": 3
+    },
+    "rural_urban_split": {
+      "rural": 18,
+      "urban": 82
+    },
+    "summary": "Includes waitstaff, room attendants, kitchen support, and hospitality service workers operating in physical venues.",
+    "task_line": "Delivers in-person service, cleaning, food support, guest assistance, and shift-based coordination.",
+    "ai_notes": "AI will help scheduling, ordering, and supervision, but the physical service work remains grounded in presence and dexterity.",
+    "sample_postings": [
+      "Steward for table service and customer handling in a quick-service chain.",
+      "Housekeeping attendant for hotel rooms, linen, and guest requests."
+    ],
+    "rationale": "The administrative layer can be digitized, but the core service work still depends on physical presence and human interaction.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Personal Care Workers",
+    "slug": "513-personal-care-workers",
+    "category": "care",
+    "nco2004_3d": "513",
+    "nco2015_3d": "532",
+    "employment_workers": 5200000,
+    "worker_share": 1.18,
+    "median_monthly_earnings_inr": 18500,
+    "median_annual_earnings_inr": 222000,
+    "vacancies_90d": 4300,
+    "demand_index": 50,
+    "exposure": 3,
+    "exposure_confidence": 0.73,
+    "education_mix": {
+      "Below secondary": 36,
+      "Secondary": 36,
+      "Diploma/Certificate": 11,
+      "Graduate": 14,
+      "Postgraduate+": 3
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Includes home-care support, attendants, and direct personal assistance occupations.",
+    "task_line": "Helps people with mobility, hygiene, feeding, supervision, and other direct assistance tasks.",
+    "ai_notes": "AI can support documentation and scheduling, but the work itself is intimate, physical, and difficult to automate cheaply in India.",
+    "sample_postings": [
+      "Elder care attendant for home visits and daily living support.",
+      "Patient care assistant for hospital ward mobility and hygiene support."
+    ],
+    "rationale": "This group has low exposure because the value comes from physical, relational, and continuous human care.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Shop Salespersons and Demonstrators",
+    "slug": "522-shop-salespersons-and-demonstrators",
+    "category": "retail",
+    "nco2004_3d": "522",
+    "nco2015_3d": "522",
+    "employment_workers": 27000000,
+    "worker_share": 6.12,
+    "median_monthly_earnings_inr": 19000,
+    "median_annual_earnings_inr": 228000,
+    "vacancies_90d": 15000,
+    "demand_index": 63,
+    "exposure": 6,
+    "exposure_confidence": 0.74,
+    "education_mix": {
+      "Below secondary": 36,
+      "Secondary": 36,
+      "Diploma/Certificate": 11,
+      "Graduate": 14,
+      "Postgraduate+": 3
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Works in retail counters, showrooms, assisted commerce, and product demonstration roles.",
+    "task_line": "Interacts with customers, explains products, handles transactions, and maintains display or stock flow.",
+    "ai_notes": "AI will reshape product discovery, assisted selling, and CRM workflows, but store-floor interaction and local trust still matter.",
+    "sample_postings": [
+      "Retail sales associate for consumer electronics with product demos.",
+      "Relationship sales executive for in-store apparel and assisted checkout."
+    ],
+    "rationale": "Digital selling tools and automated recommendations will compress parts of the role, but a large in-person component remains.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Market Gardeners and Crop Growers",
+    "slug": "611-market-gardeners-and-crop-growers",
+    "category": "agriculture",
+    "nco2004_3d": "611",
+    "nco2015_3d": "611",
+    "employment_workers": 42000000,
+    "worker_share": 9.52,
+    "median_monthly_earnings_inr": 14000,
+    "median_annual_earnings_inr": 168000,
+    "vacancies_90d": 2100,
+    "demand_index": 19,
+    "exposure": 2,
+    "exposure_confidence": 0.7,
+    "education_mix": {
+      "Below secondary": 62,
+      "Secondary": 26,
+      "Diploma/Certificate": 5,
+      "Graduate": 6,
+      "Postgraduate+": 1
+    },
+    "rural_urban_split": {
+      "rural": 84,
+      "urban": 16
+    },
+    "summary": "Covers crop growers working in market-oriented cultivation, farm operations, and seasonal production systems.",
+    "task_line": "Performs planning, sowing, irrigation, input use, field supervision, and harvest coordination.",
+    "ai_notes": "Digital advisory tools will improve decisions, but low mechanization, fragmented holdings, and physical fieldwork limit near-term AI substitution.",
+    "sample_postings": [
+      "Farm supervisor for vegetable cultivation, irrigation schedules, and labor deployment.",
+      "Protected cultivation technician for seedling, fertigation, and harvest records."
+    ],
+    "rationale": "AI can guide crop decisions but cannot cheaply replace large amounts of physical farm work in Indian conditions.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Market-Oriented Animal Producers and Related Workers",
+    "slug": "612-market-oriented-animal-producers-and-related-workers",
+    "category": "agriculture",
+    "nco2004_3d": "612",
+    "nco2015_3d": "612",
+    "employment_workers": 18500000,
+    "worker_share": 4.19,
+    "median_monthly_earnings_inr": 15000,
+    "median_annual_earnings_inr": 180000,
+    "vacancies_90d": 1100,
+    "demand_index": 23,
+    "exposure": 2,
+    "exposure_confidence": 0.69,
+    "education_mix": {
+      "Below secondary": 62,
+      "Secondary": 26,
+      "Diploma/Certificate": 5,
+      "Graduate": 6,
+      "Postgraduate+": 1
+    },
+    "rural_urban_split": {
+      "rural": 84,
+      "urban": 16
+    },
+    "summary": "Includes dairy, poultry, livestock, and other animal husbandry occupations tied to market production.",
+    "task_line": "Feeds animals, manages sheds, monitors health, handles breeding cycles, and coordinates supplies.",
+    "ai_notes": "Sensors and advisory systems can help monitoring, but direct care and low-cost manual labor remain central.",
+    "sample_postings": [
+      "Dairy farm supervisor for feeding plans, milk records, and herd health tracking.",
+      "Poultry unit operator for shed operations and daily production logging."
+    ],
+    "rationale": "The occupation remains low exposure because the physical care tasks dominate and the economics favor augmentation over replacement.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Market-Oriented Crop and Animal Producers",
+    "slug": "613-market-oriented-crop-and-animal-producers",
+    "category": "agriculture",
+    "nco2004_3d": "613",
+    "nco2015_3d": "613",
+    "employment_workers": 57000000,
+    "worker_share": 12.92,
+    "median_monthly_earnings_inr": 14500,
+    "median_annual_earnings_inr": 174000,
+    "vacancies_90d": 2400,
+    "demand_index": 18,
+    "exposure": 2,
+    "exposure_confidence": 0.69,
+    "education_mix": {
+      "Below secondary": 62,
+      "Secondary": 26,
+      "Diploma/Certificate": 5,
+      "Graduate": 6,
+      "Postgraduate+": 1
+    },
+    "rural_urban_split": {
+      "rural": 84,
+      "urban": 16
+    },
+    "summary": "Represents mixed-farming households and workers combining crop and livestock production in market-oriented settings.",
+    "task_line": "Balances seasonal cultivation, livestock care, local procurement, and small-enterprise farm decisions.",
+    "ai_notes": "Information support can improve yields and planning, but labor remains dispersed, physical, and difficult to automate at low cost.",
+    "sample_postings": [
+      "Mixed-farm operations lead for crop planning, cattle care, and local market dispatch.",
+      "Agri-extension role supporting input scheduling and farm record collection."
+    ],
+    "rationale": "AI will mainly augment planning and advisory layers while leaving the core production work largely intact.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Building Frame and Related Trades Workers",
+    "slug": "712-building-frame-and-related-trades-workers",
+    "category": "construction",
+    "nco2004_3d": "712",
+    "nco2015_3d": "711",
+    "employment_workers": 11400000,
+    "worker_share": 2.58,
+    "median_monthly_earnings_inr": 21000,
+    "median_annual_earnings_inr": 252000,
+    "vacancies_90d": 2900,
+    "demand_index": 38,
+    "exposure": 2,
+    "exposure_confidence": 0.77,
+    "education_mix": {
+      "Below secondary": 33,
+      "Secondary": 40,
+      "Diploma/Certificate": 17,
+      "Graduate": 8,
+      "Postgraduate+": 2
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Includes masons, structural workers, and building-frame trades working on civil and construction sites.",
+    "task_line": "Measures, cuts, lays, lifts, and assembles materials in changing site conditions.",
+    "ai_notes": "Design tools and site planning can improve, but most value sits in physical execution with weather, material, and safety constraints.",
+    "sample_postings": [
+      "Shuttering carpenter for high-rise concrete formwork.",
+      "Mason for residential and commercial structural works."
+    ],
+    "rationale": "The work is highly physical and site-specific, so AI exposure remains low.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Building Finishers and Related Trades Workers",
+    "slug": "713-building-finishers-and-related-trades-workers",
+    "category": "construction",
+    "nco2004_3d": "713",
+    "nco2015_3d": "712",
+    "employment_workers": 9300000,
+    "worker_share": 2.11,
+    "median_monthly_earnings_inr": 20500,
+    "median_annual_earnings_inr": 246000,
+    "vacancies_90d": 2500,
+    "demand_index": 36,
+    "exposure": 3,
+    "exposure_confidence": 0.75,
+    "education_mix": {
+      "Below secondary": 33,
+      "Secondary": 40,
+      "Diploma/Certificate": 17,
+      "Graduate": 8,
+      "Postgraduate+": 2
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Includes plasterers, tilers, painters, and finishing trades that work after structural build-out.",
+    "task_line": "Handles detailed physical finishing, adjustments, surface prep, and on-site client coordination.",
+    "ai_notes": "Planning and estimation will digitize further, but the actual trade work remains manual and location-specific.",
+    "sample_postings": [
+      "Tile fixer for interior finishing on commercial fit-outs.",
+      "Construction painter for surface preparation and coating work."
+    ],
+    "rationale": "AI affects estimation and supervision more than the hands-on finishing work, so exposure stays low to moderate.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Machinery Mechanics and Fitters",
+    "slug": "723-machinery-mechanics-and-fitters",
+    "category": "industrial-trades",
+    "nco2004_3d": "723",
+    "nco2015_3d": "723",
+    "employment_workers": 6800000,
+    "worker_share": 1.54,
+    "median_monthly_earnings_inr": 28000,
+    "median_annual_earnings_inr": 336000,
+    "vacancies_90d": 3300,
+    "demand_index": 46,
+    "exposure": 4,
+    "exposure_confidence": 0.73,
+    "education_mix": {
+      "Below secondary": 33,
+      "Secondary": 40,
+      "Diploma/Certificate": 17,
+      "Graduate": 8,
+      "Postgraduate+": 2
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Maintains industrial machinery, production equipment, and mechanical systems in workshops and factories.",
+    "task_line": "Inspects machines, diagnoses faults, replaces parts, aligns assemblies, and keeps production lines running.",
+    "ai_notes": "Predictive maintenance and diagnostics will improve with AI, but physical repair, troubleshooting, and local constraints remain central.",
+    "sample_postings": [
+      "Maintenance fitter for FMCG packaging lines and breakdown response.",
+      "Workshop mechanic for pumps, gearboxes, and rotating equipment."
+    ],
+    "rationale": "AI will improve diagnosis and maintenance planning, but the occupation still depends heavily on physical repair work.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Electrical and Electronic Equipment Mechanics and Fitters",
+    "slug": "724-electrical-and-electronic-equipment-mechanics-and-fitters",
+    "category": "industrial-trades",
+    "nco2004_3d": "724",
+    "nco2015_3d": "741",
+    "employment_workers": 4900000,
+    "worker_share": 1.11,
+    "median_monthly_earnings_inr": 30000,
+    "median_annual_earnings_inr": 360000,
+    "vacancies_90d": 3600,
+    "demand_index": 58,
+    "exposure": 5,
+    "exposure_confidence": 0.72,
+    "education_mix": {
+      "Below secondary": 33,
+      "Secondary": 40,
+      "Diploma/Certificate": 17,
+      "Graduate": 8,
+      "Postgraduate+": 2
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Works on electrical systems, instrumentation, panels, devices, and field repairs across industrial and service settings.",
+    "task_line": "Tests circuits, installs equipment, traces faults, and carries out physical maintenance on live systems.",
+    "ai_notes": "Remote diagnostics and smart-device monitoring will reduce some routine work, but installations and repairs remain physical and safety-critical.",
+    "sample_postings": [
+      "Electrical maintenance technician for plant utilities and MCC panels.",
+      "Field service engineer for electronics installations and device diagnostics."
+    ],
+    "rationale": "Compared with purely mechanical trades, the digital diagnostic layer is larger, but the occupation still cannot be done entirely from a computer.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Textile, Garment and Related Trades Workers",
+    "slug": "743-textile-garment-and-related-trades-workers",
+    "category": "manufacturing",
+    "nco2004_3d": "743",
+    "nco2015_3d": "753",
+    "employment_workers": 13200000,
+    "worker_share": 2.99,
+    "median_monthly_earnings_inr": 18500,
+    "median_annual_earnings_inr": 222000,
+    "vacancies_90d": 5100,
+    "demand_index": 42,
+    "exposure": 5,
+    "exposure_confidence": 0.7,
+    "education_mix": {
+      "Below secondary": 33,
+      "Secondary": 40,
+      "Diploma/Certificate": 17,
+      "Graduate": 8,
+      "Postgraduate+": 2
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Includes sewing-machine operators, garment workers, textile-process trades, and production support in labor-intensive manufacturing.",
+    "task_line": "Runs repetitive but still tactile production steps, quality checks, and line-based coordination.",
+    "ai_notes": "Workflow planning and quality inspection will digitize further, but low wages and physical handling slow full automation.",
+    "sample_postings": [
+      "Industrial tailor for export-garment stitching lines.",
+      "Textile production associate for inspection, folding, and packing coordination."
+    ],
+    "rationale": "The work is repetitive enough to face automation pressure, but labor-cost economics and physical handling keep exposure moderate.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Food and Related Products Machine Operators",
+    "slug": "827-food-and-related-products-machine-operators",
+    "category": "manufacturing",
+    "nco2004_3d": "827",
+    "nco2015_3d": "816",
+    "employment_workers": 3500000,
+    "worker_share": 0.79,
+    "median_monthly_earnings_inr": 22000,
+    "median_annual_earnings_inr": 264000,
+    "vacancies_90d": 1900,
+    "demand_index": 41,
+    "exposure": 4,
+    "exposure_confidence": 0.68,
+    "education_mix": {
+      "Below secondary": 36,
+      "Secondary": 36,
+      "Diploma/Certificate": 11,
+      "Graduate": 14,
+      "Postgraduate+": 3
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Operates processing machinery in food manufacturing, packaging, and line-production settings.",
+    "task_line": "Monitors machines, handles materials, checks quality, and responds to production issues on the floor.",
+    "ai_notes": "Automation already exists in plants, but many Indian facilities still rely on mixed manual-machine workflows.",
+    "sample_postings": [
+      "Packaging line operator for a snack-food manufacturing unit.",
+      "Process operator for dairy production and hygiene checks."
+    ],
+    "rationale": "Exposure is moderate because plant automation can advance, but the work still includes manual materials handling and shift-floor response.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Motor Vehicle Drivers",
+    "slug": "832-motor-vehicle-drivers",
+    "category": "transport",
+    "nco2004_3d": "832",
+    "nco2015_3d": "833",
+    "employment_workers": 16800000,
+    "worker_share": 3.81,
+    "median_monthly_earnings_inr": 24000,
+    "median_annual_earnings_inr": 288000,
+    "vacancies_90d": 12400,
+    "demand_index": 61,
+    "exposure": 4,
+    "exposure_confidence": 0.69,
+    "education_mix": {
+      "Below secondary": 36,
+      "Secondary": 36,
+      "Diploma/Certificate": 11,
+      "Graduate": 14,
+      "Postgraduate+": 3
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Includes commercial drivers, delivery drivers, chauffeurs, and logistics vehicle operators.",
+    "task_line": "Drives in complex traffic conditions, handles loading or customer coordination, and manages route execution.",
+    "ai_notes": "Routing, fleet management, and dispatch are highly digitizable, but low-cost autonomous driving remains far from broad Indian deployment.",
+    "sample_postings": [
+      "Last-mile delivery driver for e-commerce parcel routes.",
+      "Heavy vehicle driver for intercity logistics and loading coordination."
+    ],
+    "rationale": "AI will change routing and dispatch systems a lot, but the actual driving task remains only moderately exposed in India.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Sales and Service Elementary Occupations",
+    "slug": "911-sales-and-service-elementary-occupations",
+    "category": "elementary-service",
+    "nco2004_3d": "911",
+    "nco2015_3d": "962",
+    "employment_workers": 29400000,
+    "worker_share": 6.66,
+    "median_monthly_earnings_inr": 16000,
+    "median_annual_earnings_inr": 192000,
+    "vacancies_90d": 5800,
+    "demand_index": 33,
+    "exposure": 3,
+    "exposure_confidence": 0.65,
+    "education_mix": {
+      "Below secondary": 36,
+      "Secondary": 36,
+      "Diploma/Certificate": 11,
+      "Graduate": 14,
+      "Postgraduate+": 3
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Represents low-formality sales and service support roles with heavy physical and interpersonal content.",
+    "task_line": "Runs errands, moves goods, supports service counters, and handles small operational tasks in person.",
+    "ai_notes": "Digital tools will reshape supervision and payments, but the jobs themselves often remain manually executed.",
+    "sample_postings": [
+      "Helper role supporting retail dispatch and in-store customer flow.",
+      "Service assistant for field collection, errands, and local operations support."
+    ],
+    "rationale": "This group remains low exposure because much of the work is informal, physical, and tightly linked to local presence.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Agricultural, Fishery and Related Labourers",
+    "slug": "920-agricultural-fishery-and-related-labourers",
+    "category": "agriculture",
+    "nco2004_3d": "920",
+    "nco2015_3d": "921",
+    "employment_workers": 78000000,
+    "worker_share": 17.68,
+    "median_monthly_earnings_inr": 13000,
+    "median_annual_earnings_inr": 156000,
+    "vacancies_90d": 1700,
+    "demand_index": 12,
+    "exposure": 1,
+    "exposure_confidence": 0.72,
+    "education_mix": {
+      "Below secondary": 62,
+      "Secondary": 26,
+      "Diploma/Certificate": 5,
+      "Graduate": 6,
+      "Postgraduate+": 1
+    },
+    "rural_urban_split": {
+      "rural": 84,
+      "urban": 16
+    },
+    "summary": "Covers casual agricultural and allied labour performing field, fishery, and related manual tasks.",
+    "task_line": "Works on sowing, harvesting, carrying, sorting, feeding, and other labour-intensive operations.",
+    "ai_notes": "AI may improve advisory systems and farm planning, but this labor category faces minimal direct substitution from frontier models.",
+    "sample_postings": [
+      "Farm labour hiring for harvest-season crop cutting and loading.",
+      "Fishery support work for net handling, sorting, and transport prep."
+    ],
+    "rationale": "The work is overwhelmingly manual, local, and low-cost, so AI exposure is minimal.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  },
+  {
+    "country": "India",
+    "title": "Labourers in Mining, Construction, Manufacturing and Transport",
+    "slug": "931-labourers-in-mining-construction-manufacturing-and-transport",
+    "category": "manual-labour",
+    "nco2004_3d": "931",
+    "nco2015_3d": "931",
+    "employment_workers": 46500000,
+    "worker_share": 10.54,
+    "median_monthly_earnings_inr": 16500,
+    "median_annual_earnings_inr": 198000,
+    "vacancies_90d": 3500,
+    "demand_index": 24,
+    "exposure": 2,
+    "exposure_confidence": 0.71,
+    "education_mix": {
+      "Below secondary": 33,
+      "Secondary": 40,
+      "Diploma/Certificate": 17,
+      "Graduate": 8,
+      "Postgraduate+": 2
+    },
+    "rural_urban_split": {
+      "rural": 56,
+      "urban": 44
+    },
+    "summary": "Includes helpers and manual labour roles around construction, manufacturing, warehousing, loading, and transport operations.",
+    "task_line": "Moves materials, supports trades, loads vehicles, handles simple tools, and works in unpredictable physical environments.",
+    "ai_notes": "Scheduling and supervision will digitize, but these occupations remain anchored in manual execution and low-cost labor.",
+    "sample_postings": [
+      "Warehouse loader for FMCG dispatch and vehicle turnaround.",
+      "Construction helper supporting masons, bar-benders, and material movement."
+    ],
+    "rationale": "AI changes coordination around the job more than the core labor itself, so direct exposure remains low.",
+    "sources": [
+      {
+        "name": "NCO 2004 group title",
+        "type": "official-taxonomy",
+        "status": "seeded"
+      },
+      {
+        "name": "PLFS 2023-24 aggregate placeholder",
+        "type": "official-labour-stats",
+        "status": "approximation"
+      },
+      {
+        "name": "NCS vacancy proxy placeholder",
+        "type": "demand-proxy",
+        "status": "approximation"
+      }
+    ],
+    "description_source": "seed-demo",
+    "postings_source": "seed-demo",
+    "plfs_pay_confidence": "approximation",
+    "employment_confidence": "approximation",
+    "demand_confidence": "approximation",
+    "url": "https://www.ncs.gov.in/Pages/Search.aspx"
+  }
+]

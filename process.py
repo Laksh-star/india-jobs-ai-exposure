@@ -1,57 +1,29 @@
-"""
-Process scraped HTML files into Markdown.
-
-Reads from html/<slug>.html, writes to pages/<slug>.md.
-Reuses parse_detail.parse_ooh_page() which is already tested.
-
-Usage:
-    uv run python process.py              # process all HTML files
-    uv run python process.py --force      # re-process even if .md exists
-"""
+"""Build occupation packets and markdown pages for the India dataset."""
 
 import argparse
 import json
 import os
-from parse_detail import parse_ooh_page
+
+from india_pipeline import PROCESSED_DIR, normalized_seed_records, write_occupations_json, write_packets_json, write_pages
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Convert HTML to Markdown")
-    parser.add_argument("--force", action="store_true", help="Re-process even if .md exists")
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Build India occupation packets")
+    parser.add_argument("--input", default=None, help="Optional prebuilt packet JSON")
+    parser.add_argument("--seed", action="store_true", help="Force the bundled India seed dataset")
     args = parser.parse_args()
 
-    os.makedirs("pages", exist_ok=True)
+    if args.input and not args.seed:
+        with open(args.input) as handle:
+            records = json.load(handle)
+    else:
+        records = normalized_seed_records()
 
-    # Load master list for ordering/metadata
-    with open("occupations.json") as f:
-        occupations = json.load(f)
-
-    processed = 0
-    skipped = 0
-    missing = 0
-
-    for occ in occupations:
-        slug = occ["slug"]
-        html_path = f"html/{slug}.html"
-        md_path = f"pages/{slug}.md"
-
-        if not os.path.exists(html_path):
-            missing += 1
-            continue
-
-        if not args.force and os.path.exists(md_path):
-            skipped += 1
-            continue
-
-        md = parse_ooh_page(html_path)
-        with open(md_path, "w") as f:
-            f.write(md)
-        processed += 1
-
-    total_html = len([f for f in os.listdir("html") if f.endswith(".html")])
-    total_md = len([f for f in os.listdir("pages") if f.endswith(".md")])
-    print(f"Processed: {processed}, Skipped (cached): {skipped}, Missing HTML: {missing}")
-    print(f"Total: {total_html} HTML files, {total_md} Markdown files")
+    os.makedirs(PROCESSED_DIR, exist_ok=True)
+    write_packets_json(records)
+    write_pages(records)
+    write_occupations_json(records)
+    print(f"Wrote {len(records)} occupation packets and markdown pages.")
 
 
 if __name__ == "__main__":

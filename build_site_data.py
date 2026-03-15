@@ -1,55 +1,57 @@
-"""
-Build a compact JSON for the website by merging CSV stats with AI exposure scores.
+"""Build the static site payload for the India labour-market view."""
 
-Reads occupations.csv (for stats) and scores.json (for AI exposure).
-Writes site/data.json.
-
-Usage:
-    uv run python build_site_data.py
-"""
+from __future__ import annotations
 
 import csv
 import json
+import os
 
 
-def main():
-    # Load AI exposure scores
-    with open("scores.json") as f:
-        scores_list = json.load(f)
-    scores = {s["slug"]: s for s in scores_list}
+def main() -> None:
+    with open("scores.json") as handle:
+        scores = {row["nco2004_3d"]: row for row in json.load(handle)}
 
-    # Load CSV stats
-    with open("occupations.csv") as f:
-        reader = csv.DictReader(f)
-        rows = list(reader)
-
-    # Merge
     data = []
-    for row in rows:
-        slug = row["slug"]
-        score = scores.get(slug, {})
-        data.append({
-            "title": row["title"],
-            "slug": slug,
-            "category": row["category"],
-            "pay": int(row["median_pay_annual"]) if row["median_pay_annual"] else None,
-            "jobs": int(row["num_jobs_2024"]) if row["num_jobs_2024"] else None,
-            "outlook": int(row["outlook_pct"]) if row["outlook_pct"] else None,
-            "outlook_desc": row["outlook_desc"],
-            "education": row["entry_education"],
-            "exposure": score.get("exposure"),
-            "exposure_rationale": score.get("rationale"),
-            "url": row.get("url", ""),
-        })
+    with open("occupations.csv") as handle:
+        for row in csv.DictReader(handle):
+            score = scores.get(row["nco2004_3d"], {})
+            data.append(
+                {
+                    "country": row["country"],
+                    "title": row["title"],
+                    "slug": row["slug"],
+                    "category": row["category"],
+                    "nco2004_3d": row["nco2004_3d"],
+                    "nco2015_3d": row["nco2015_3d"],
+                    "employment_workers": int(row["employment_workers"]),
+                    "worker_share": float(row["worker_share"]),
+                    "median_monthly_earnings_inr": int(row["median_monthly_earnings_inr"]),
+                    "median_annual_earnings_inr": int(row["median_annual_earnings_inr"]),
+                    "plfs_pay_confidence": row["plfs_pay_confidence"],
+                    "employment_confidence": row["employment_confidence"],
+                    "vacancies_90d": int(row["vacancies_90d"]),
+                    "demand_index": int(row["demand_index"]),
+                    "demand_confidence": row["demand_confidence"],
+                    "education_mix": json.loads(row["education_mix_json"]),
+                    "rural_urban_split": json.loads(row["rural_urban_split_json"]),
+                    "sources": json.loads(row["sources_json"]),
+                    "description_source": row["description_source"],
+                    "postings_source": row["postings_source"],
+                    "exposure": score.get("exposure"),
+                    "exposure_confidence": score.get("exposure_confidence"),
+                    "exposure_rationale": score.get("rationale"),
+                    "evidence_sources": score.get("evidence_sources", []),
+                    "url": row["url"],
+                }
+            )
 
-    import os
     os.makedirs("site", exist_ok=True)
-    with open("site/data.json", "w") as f:
-        json.dump(data, f)
+    with open("site/data.json", "w") as handle:
+        json.dump(data, handle)
 
+    total_workers = sum(record["employment_workers"] for record in data)
     print(f"Wrote {len(data)} occupations to site/data.json")
-    total_jobs = sum(d["jobs"] for d in data if d["jobs"])
-    print(f"Total jobs represented: {total_jobs:,}")
+    print(f"Total workers represented: {total_workers:,}")
 
 
 if __name__ == "__main__":
