@@ -5,234 +5,282 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Exposure of the Indian Job Market</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #081018;
-  --panel: #101b25;
-  --panel-2: #132330;
-  --fg: #ebf2f5;
-  --muted: #92a4b3;
-  --line: rgba(255,255,255,0.08);
-  --sidebar-w: 300px;
+  --bg: #0c1016;
+  --panel: #11161d;
+  --panel-border: rgba(255,255,255,0.06);
+  --fg: #e7eaee;
+  --fg2: #8f97a3;
+  --sidebar-w: 220px;
 }
 
 body {
-  background:
-    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15), transparent 35%),
-    radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.10), transparent 28%),
-    linear-gradient(180deg, #081018 0%, #0d151d 100%);
+  background: var(--bg);
   color: var(--fg);
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   overflow: hidden;
   height: 100vh;
 }
 
-a { color: inherit; }
+a { color: #79a7ff; }
 
 #sidebar {
   position: fixed;
-  inset: 0 auto 0 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
   width: var(--sidebar-w);
-  background: rgba(16, 27, 37, 0.94);
-  border-right: 1px solid var(--line);
-  padding: 22px 20px 26px;
+  background: var(--panel);
+  border-right: 1px solid var(--panel-border);
+  padding: 18px 16px 20px;
   overflow-y: auto;
-  backdrop-filter: blur(14px);
+  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: 18px;
-  z-index: 10;
 }
 
 #sidebar h1 {
-  font-size: 21px;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.03em;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .subtitle {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-  margin-top: 8px;
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--fg2);
 }
 
-.card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px 15px;
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.card h3 {
+.section h3 {
   font-size: 10px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-  margin-bottom: 8px;
+  letter-spacing: 0.1em;
+  color: var(--fg2);
 }
 
 .stat-big {
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: -0.04em;
+  font-size: 34px;
   line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.04em;
 }
 
-.stat-sub {
-  margin-top: 6px;
-  color: var(--muted);
+.stat-label {
   font-size: 11px;
+  color: var(--fg2);
   line-height: 1.4;
 }
 
 .toggle {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  display: flex;
+  gap: 4px;
 }
 
 .toggle button {
-  border: 1px solid var(--line);
+  flex: 1;
+  padding: 5px 0;
+  font-size: 10px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
   background: transparent;
-  color: var(--muted);
-  font-size: 11px;
-  font-family: inherit;
-  border-radius: 999px;
-  padding: 8px 10px;
+  color: var(--fg2);
   cursor: pointer;
 }
 
 .toggle button.active {
-  background: rgba(235, 242, 245, 0.08);
+  background: rgba(255,255,255,0.08);
   color: var(--fg);
-}
-
-.legend {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--muted);
-  font-size: 10px;
-}
-
-.legend canvas {
-  flex: 1;
-  height: 8px;
-  border-radius: 999px;
-}
-
-.mini-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.mini-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
-  align-items: center;
-  font-size: 11px;
-}
-
-.mini-row .label {
-  color: var(--muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.mini-row .value {
-  color: var(--fg);
-  font-variant-numeric: tabular-nums;
+  border-color: rgba(255,255,255,0.18);
 }
 
 .histogram {
   display: flex;
-  align-items: end;
-  gap: 3px;
-  height: 64px;
+  align-items: flex-end;
+  gap: 2px;
+  height: 52px;
 }
 
 .histogram .bar {
   flex: 1;
-  border-radius: 4px 4px 0 0;
-  min-height: 2px;
+  min-height: 1px;
+  border-radius: 1px 1px 0 0;
 }
 
 .axis {
   display: flex;
   justify-content: space-between;
-  margin-top: 5px;
-  color: var(--muted);
+  font-size: 9px;
+  color: var(--fg2);
+}
+
+.tier-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tier-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.tier-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.tier-name {
+  flex: 1;
+  color: var(--fg2);
+}
+
+.tier-workers {
+  white-space: nowrap;
+}
+
+.tier-pct {
+  width: 30px;
+  text-align: right;
   font-size: 10px;
+  color: var(--fg2);
+}
+
+.hbar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hbar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.hbar-label {
+  width: 72px;
+  flex-shrink: 0;
+  text-align: right;
+  color: var(--fg2);
+  font-size: 10px;
+}
+
+.hbar-track {
+  flex: 1;
+  height: 10px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.hbar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.hbar-val {
+  width: 28px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 10px;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--fg2);
+}
+
+.legend canvas {
+  border-radius: 2px;
 }
 
 canvas#canvas {
   position: fixed;
-  inset: 0 0 0 var(--sidebar-w);
+  top: 0;
+  left: var(--sidebar-w);
   display: block;
+  cursor: default;
 }
 
 #tooltip {
   position: fixed;
   pointer-events: none;
-  max-width: 360px;
-  background: rgba(11, 19, 27, 0.97);
+  background: #131922;
   border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: 0 18px 60px rgba(0,0,0,0.42);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  max-width: 340px;
   opacity: 0;
   transition: opacity 0.12s;
   z-index: 30;
+  box-shadow: 0 10px 36px rgba(0,0,0,0.5);
 }
 
 #tooltip.visible { opacity: 1; }
 
 .tt-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 4px;
+  color: #fff;
+  margin-bottom: 6px;
 }
 
-.tt-code {
-  color: var(--muted);
-  font-size: 11px;
+.tt-exposure {
+  font-size: 12px;
   margin-bottom: 8px;
 }
 
 .tt-grid {
   display: grid;
   grid-template-columns: auto auto;
-  gap: 4px 14px;
+  gap: 2px 12px;
   font-size: 12px;
 }
 
-.tt-grid .label { color: var(--muted); }
-.tt-grid .value { text-align: right; font-variant-numeric: tabular-nums; }
+.tt-grid .label { color: var(--fg2); }
+.tt-grid .value { text-align: right; }
 
 .tt-body, .tt-sources {
-  margin-top: 10px;
-  color: var(--muted);
+  margin-top: 8px;
   font-size: 11px;
-  line-height: 1.45;
+  color: var(--fg2);
+  line-height: 1.4;
 }
 
 @media (max-width: 900px) {
   body { overflow: auto; height: auto; }
   #sidebar {
     position: relative;
-    width: auto;
+    width: 100%;
     border-right: 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--panel-border);
   }
   canvas#canvas {
     position: relative;
-    inset: auto;
+    left: 0;
     width: 100%;
     min-height: 68vh;
   }
@@ -245,10 +293,9 @@ canvas#canvas {
   <div>
     <h1>AI Exposure of the Indian Job Market</h1>
     <div class="subtitle">
-      NCO 2004 3-digit groups, all-India view.<br>
-      Area = workers, color = AI exposure, alternate view = exposure vs demand.<br>
-      Seed bundle mirrors the planned PLFS + NCS pipeline and keeps provenance visible.<br>
-      Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>.
+      28 occupation groups · area = workers · color = AI exposure<br>
+      India adaptation using NCO 2004 3-digit groups<br>
+      Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>
     </div>
   </div>
 
@@ -257,47 +304,48 @@ canvas#canvas {
     <button data-view="scatter">Exposure vs Demand</button>
   </div>
 
-  <div class="card">
+  <div class="section">
     <h3>Total workers</h3>
     <div class="stat-big" id="statWorkers">-</div>
-    <div class="stat-sub">Summed across the bundled occupation groups.</div>
   </div>
 
-  <div class="card">
-    <h3>Weighted AI exposure</h3>
+  <div class="section">
+    <h3>Weighted avg. exposure</h3>
     <div class="stat-big" id="statExposure">-</div>
-    <div class="stat-sub">Employment-weighted 0-10 exposure score.</div>
+    <div class="stat-label">employment-weighted, 0-10 scale</div>
   </div>
 
-  <div class="card">
-    <h3>High-exposure workers</h3>
-    <div class="stat-big" id="statHighExposure">-</div>
-    <div class="stat-sub">Workers in groups scored 7+ on AI exposure.</div>
-  </div>
-
-  <div class="card">
-    <h3>Jobs by exposure</h3>
+  <div class="section">
+    <h3>Workers by exposure</h3>
     <div class="histogram" id="histogram"></div>
     <div class="axis"><span>0</span><span>5</span><span>10</span></div>
   </div>
 
-  <div class="card">
-    <h3>Demand hotspots</h3>
-    <div class="mini-list" id="hotspots"></div>
+  <div class="section">
+    <h3>Breakdown</h3>
+    <div class="tier-bar" id="tierBar"></div>
   </div>
 
-  <div class="card">
-    <h3>Top categories by workers</h3>
-    <div class="mini-list" id="categories"></div>
+  <div class="section">
+    <h3>Exposure by pay</h3>
+    <div class="hbar-chart" id="payChart"></div>
   </div>
 
-  <div class="card">
-    <h3>Exposure legend</h3>
-    <div class="legend">
-      <span>Low</span>
-      <canvas id="legend" width="120" height="8"></canvas>
-      <span>High</span>
-    </div>
+  <div class="section">
+    <h3>Exposure by category</h3>
+    <div class="hbar-chart" id="categoryChart"></div>
+  </div>
+
+  <div class="section">
+    <h3>Workers exposed</h3>
+    <div class="stat-big" id="statHighExposure">-</div>
+    <div class="stat-label" id="statHighExposureDesc">workers in high-exposure groups (7+)</div>
+  </div>
+
+  <div class="legend">
+    <span>Low</span>
+    <canvas id="legend" width="80" height="8"></canvas>
+    <span>High</span>
   </div>
 </div>
 
@@ -305,7 +353,7 @@ canvas#canvas {
 
 <div id="tooltip">
   <div class="tt-title"></div>
-  <div class="tt-code"></div>
+  <div class="tt-exposure"></div>
   <div class="tt-grid"></div>
   <div class="tt-body"></div>
   <div class="tt-sources"></div>
@@ -315,7 +363,7 @@ canvas#canvas {
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const tooltip = document.getElementById("tooltip");
-let dpr = Math.max(1, window.devicePixelRatio || 1);
+let dpr = window.devicePixelRatio || 1;
 let currentView = "treemap";
 let data = [];
 let rects = [];
@@ -323,38 +371,61 @@ let points = [];
 let hovered = null;
 
 function fmtWorkers(n) {
-  if (n == null) return "—";
+  if (n == null) return "?";
   if (n >= 1e7) return `${(n / 1e7).toFixed(1)}Cr`;
   if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
   if (n >= 1e3) return `${Math.round(n / 1e3)}K`;
   return String(n);
 }
 
-function fmtInr(n) {
-  if (n == null) return "—";
-  return `INR ${n.toLocaleString("en-IN")}/mo`;
+function fmtWorkersLong(n) {
+  if (n == null) return "?";
+  return n.toLocaleString("en-IN");
 }
 
-function exposureColor(score, alpha = 1) {
-  const t = Math.max(0, Math.min(10, score || 0)) / 10;
-  const r = Math.round(42 + 215 * t);
-  const g = Math.round(168 - 115 * t);
-  const b = Math.round(93 - 40 * t);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+function fmtInr(n) {
+  if (n == null) return "?";
+  return `INR ${n.toLocaleString("en-IN")}`;
+}
+
+function exposureColor(score) {
+  if (score == null) return [128, 128, 128];
+  const t = Math.max(0, Math.min(10, score)) / 10;
+  let r, g, b;
+  if (t < 0.5) {
+    const s = t / 0.5;
+    r = Math.round(50 + s * 180);
+    g = Math.round(160 - s * 10);
+    b = Math.round(50 - s * 20);
+  } else {
+    const s = (t - 0.5) / 0.5;
+    r = Math.round(230 + s * 25);
+    g = Math.round(150 - s * 110);
+    b = Math.round(30 - s * 10);
+  }
+  return [r, g, b];
+}
+
+function exposureColorCSS(score, alpha) {
+  const [r, g, b] = exposureColor(score);
+  return `rgba(${r},${g},${b},${alpha})`;
 }
 
 function squarify(items, x, y, w, h) {
   if (items.length === 0) return [];
   if (items.length === 1) return [{ ...items[0], rx: x, ry: y, rw: w, rh: h }];
-  const total = items.reduce((sum, item) => sum + item.value, 0);
+  const total = items.reduce((s, d) => s + d.value, 0);
+  if (total === 0) return [];
+
+  const results = [];
   let remaining = [...items];
   let cx = x, cy = y, cw = w, ch = h;
-  const out = [];
 
-  while (remaining.length) {
-    const remTotal = remaining.reduce((sum, item) => sum + item.value, 0);
+  while (remaining.length > 0) {
+    const remTotal = remaining.reduce((s, d) => s + d.value, 0);
     const vertical = cw >= ch;
     const side = vertical ? ch : cw;
+
     let row = [remaining[0]];
     let rowSum = remaining[0].value;
 
@@ -370,23 +441,33 @@ function squarify(items, x, y, w, h) {
       }
     }
 
-    const fraction = rowSum / remTotal;
-    const thickness = vertical ? cw * fraction : ch * fraction;
+    const rowFraction = rowSum / remTotal;
+    const rowThickness = vertical ? cw * rowFraction : ch * rowFraction;
     let offset = 0;
 
     for (const item of row) {
       const itemFraction = item.value / rowSum;
-      const length = side * itemFraction;
-      if (vertical) out.push({ ...item, rx: cx, ry: cy + offset, rw: thickness, rh: length });
-      else out.push({ ...item, rx: cx + offset, ry: cy, rw: length, rh: thickness });
-      offset += length;
+      const itemLength = side * itemFraction;
+      if (vertical) {
+        results.push({ ...item, rx: cx, ry: cy + offset, rw: rowThickness, rh: itemLength });
+      } else {
+        results.push({ ...item, rx: cx + offset, ry: cy, rw: itemLength, rh: rowThickness });
+      }
+      offset += itemLength;
     }
 
-    if (vertical) { cx += thickness; cw -= thickness; }
-    else { cy += thickness; ch -= thickness; }
+    if (vertical) {
+      cx += rowThickness;
+      cw -= rowThickness;
+    } else {
+      cy += rowThickness;
+      ch -= rowThickness;
+    }
+
     remaining = remaining.slice(row.length);
   }
-  return out;
+
+  return results;
 }
 
 function worstAspect(row, rowSum, side, totalArea, availableExtent) {
@@ -394,27 +475,74 @@ function worstAspect(row, rowSum, side, totalArea, availableExtent) {
   if (rowExtent === 0) return Infinity;
   let worst = 0;
   for (const item of row) {
-    const itemLength = side * (item.value / rowSum);
-    if (itemLength === 0) continue;
-    const aspect = Math.max(rowExtent / itemLength, itemLength / rowExtent);
+    const itemLen = side * (item.value / rowSum);
+    if (itemLen === 0) continue;
+    const aspect = Math.max(rowExtent / itemLen, itemLen / rowExtent);
     if (aspect > worst) worst = aspect;
   }
   return worst;
 }
 
+function categoryExposure(rows) {
+  const workers = rows.reduce((sum, row) => sum + row.employment_workers, 0);
+  if (!workers) return 0;
+  return rows.reduce((sum, row) => sum + row.exposure * row.employment_workers, 0) / workers;
+}
+
+function renderTierBar() {
+  const totalWorkers = data.reduce((sum, row) => sum + row.employment_workers, 0);
+  const tiers = [
+    ["Minimal (0-1)", 0, 1],
+    ["Low (2-3)", 2, 3],
+    ["Moderate (4-5)", 4, 5],
+    ["High (6-7)", 6, 7],
+    ["Very high (8-10)", 8, 10],
+  ];
+  const tierBar = document.getElementById("tierBar");
+  tierBar.innerHTML = "";
+  tiers.forEach(([name, lo, hi]) => {
+    const rows = data.filter(row => row.exposure >= lo && row.exposure <= hi);
+    const workers = rows.reduce((sum, row) => sum + row.employment_workers, 0);
+    const pct = totalWorkers ? Math.round((workers / totalWorkers) * 100) : 0;
+    const row = document.createElement("div");
+    row.className = "tier-row";
+    row.innerHTML = `
+      <div class="tier-color" style="background:${exposureColorCSS((lo + hi) / 2, 0.95)}"></div>
+      <div class="tier-name">${name}</div>
+      <div class="tier-workers">${fmtWorkers(workers)}</div>
+      <div class="tier-pct">${pct}%</div>
+    `;
+    tierBar.appendChild(row);
+  });
+}
+
+function renderHorizontalChart(el, rows) {
+  const node = document.getElementById(el);
+  const maxVal = Math.max(...rows.map(row => row.value), 1);
+  node.innerHTML = rows.map(row => `
+    <div class="hbar-row">
+      <div class="hbar-label">${row.label}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${(row.value / maxVal) * 100}%; background:${exposureColorCSS(row.value, 0.95)}"></div></div>
+      <div class="hbar-val">${row.value.toFixed(1)}</div>
+    </div>
+  `).join("");
+}
+
 function computeStats() {
-  const totalWorkers = data.reduce((sum, d) => sum + d.employment_workers, 0);
-  const weightedExposure = data.reduce((sum, d) => sum + (d.exposure || 0) * d.employment_workers, 0) / totalWorkers;
-  const highExposure = data
-    .filter(d => (d.exposure || 0) >= 7)
-    .reduce((sum, d) => sum + d.employment_workers, 0);
+  const totalWorkers = data.reduce((sum, row) => sum + row.employment_workers, 0);
+  const weightedExposure = totalWorkers
+    ? data.reduce((sum, row) => sum + row.exposure * row.employment_workers, 0) / totalWorkers
+    : 0;
+  const highExposureWorkers = data
+    .filter(row => row.exposure >= 7)
+    .reduce((sum, row) => sum + row.employment_workers, 0);
 
   document.getElementById("statWorkers").textContent = fmtWorkers(totalWorkers);
   document.getElementById("statExposure").textContent = weightedExposure.toFixed(1);
-  document.getElementById("statHighExposure").textContent = fmtWorkers(highExposure);
+  document.getElementById("statHighExposure").textContent = fmtWorkers(highExposureWorkers);
 
   const byExposure = Array.from({ length: 11 }, (_, score) =>
-    data.filter(d => d.exposure === score).reduce((sum, d) => sum + d.employment_workers, 0)
+    data.filter(row => row.exposure === score).reduce((sum, row) => sum + row.employment_workers, 0)
   );
   const maxBin = Math.max(...byExposure, 1);
   const histogram = document.getElementById("histogram");
@@ -423,113 +551,130 @@ function computeStats() {
     const bar = document.createElement("div");
     bar.className = "bar";
     bar.style.height = `${Math.max(2, (value / maxBin) * 100)}%`;
-    bar.style.background = exposureColor(score, 0.9);
-    bar.title = `${score}/10: ${fmtWorkers(value)} workers`;
+    bar.style.background = exposureColorCSS(score, 0.9);
     histogram.appendChild(bar);
   });
 
-  const hotspots = [...data].sort((a, b) => b.demand_index - a.demand_index).slice(0, 5);
-  document.getElementById("hotspots").innerHTML = hotspots.map(row =>
-    `<div class="mini-row"><span class="label">${row.title}</span><span class="value">${row.demand_index}</span></div>`
-  ).join("");
+  renderTierBar();
 
-  const categories = Object.entries(data.reduce((acc, row) => {
-    acc[row.category] = (acc[row.category] || 0) + row.employment_workers;
+  const payBands = [
+    ["<20k", 0, 20000],
+    ["20-30k", 20000, 30000],
+    ["30-50k", 30000, 50000],
+    ["50-75k", 50000, 75000],
+    ["75k+", 75000, Infinity],
+  ];
+  renderHorizontalChart("payChart", payBands.map(([label, lo, hi]) => {
+    const rows = data.filter(row => row.median_monthly_earnings_inr >= lo && row.median_monthly_earnings_inr < hi);
+    return { label, value: categoryExposure(rows) };
+  }).filter(row => row.value > 0));
+
+  const byCategory = Object.entries(data.reduce((acc, row) => {
+    (acc[row.category] ||= []).push(row);
     return acc;
-  }, {})).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  document.getElementById("categories").innerHTML = categories.map(([label, value]) =>
-    `<div class="mini-row"><span class="label">${label}</span><span class="value">${fmtWorkers(value)}</span></div>`
-  ).join("");
+  }, {})).map(([label, rows]) => ({ label: label.slice(0, 10), value: categoryExposure(rows) }));
+  renderHorizontalChart("categoryChart", byCategory.sort((a, b) => b.value - a.value).slice(0, 5));
 }
 
 function layoutTreemap() {
-  const margin = 14;
-  const gap = 2;
+  const margin = 12;
+  const gap = 1.5;
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
-  const grouped = Object.entries(data.reduce((acc, row) => {
-    (acc[row.category] ||= []).push(row);
-    return acc;
-  }, {})).map(([category, items]) => ({
-    category,
-    value: items.reduce((sum, item) => sum + item.employment_workers, 0),
-    items: items.sort((a, b) => b.employment_workers - a.employment_workers),
+  const byCategory = {};
+  for (const row of data) {
+    (byCategory[row.category] ||= []).push(row);
+  }
+  const categories = Object.keys(byCategory).map(cat => ({
+    cat,
+    items: byCategory[cat].sort((a, b) => b.employment_workers - a.employment_workers),
+    value: byCategory[cat].reduce((sum, row) => sum + row.employment_workers, 0),
   })).sort((a, b) => b.value - a.value);
 
   rects = [];
-  const catRects = squarify(grouped, margin, margin, w - margin * 2, h - margin * 2);
+  const catRects = squarify(categories, margin, margin, w - margin * 2, h - margin * 2);
   for (const catRect of catRects) {
-    const inner = squarify(
-      catRect.items.map(item => ({ ...item, value: item.employment_workers })),
+    const innerRects = squarify(
+      catRect.items.map(row => ({ ...row, value: row.employment_workers })),
       catRect.rx + gap,
       catRect.ry + gap,
-      Math.max(0, catRect.rw - gap * 2),
-      Math.max(0, catRect.rh - gap * 2)
+      catRect.rw - gap * 2,
+      catRect.rh - gap * 2
     );
-    rects.push(...inner);
+    rects.push(...innerRects);
   }
 }
 
 function drawTreemap() {
   for (const rect of rects) {
-    ctx.fillStyle = exposureColor(rect.exposure, hovered === rect ? 1 : 0.88);
+    const hoveredNow = rect === hovered;
+    ctx.fillStyle = exposureColorCSS(rect.exposure, hoveredNow ? 1 : 0.9);
     ctx.fillRect(rect.rx, rect.ry, rect.rw, rect.rh);
-    if (hovered === rect) {
-      ctx.strokeStyle = "rgba(255,255,255,0.85)";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(rect.rx + 1, rect.ry + 1, rect.rw - 2, rect.rh - 2);
+
+    if (hoveredNow) {
+      ctx.strokeStyle = "rgba(255,255,255,0.9)";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(rect.rx + 0.75, rect.ry + 0.75, rect.rw - 1.5, rect.rh - 1.5);
     }
-    if (rect.rw > 70 && rect.rh > 26) {
-      ctx.fillStyle = "rgba(255,255,255,0.92)";
-      ctx.font = rect.rh > 60 ? "600 15px Georgia" : "600 12px Georgia";
-      ctx.fillText(rect.title.slice(0, 28), rect.rx + 8, rect.ry + 18);
-      if (rect.rh > 42) {
+
+    if (rect.rw > 72 && rect.rh > 26) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(rect.rx + 3, rect.ry + 3, rect.rw - 6, rect.rh - 6);
+      ctx.clip();
+
+      ctx.fillStyle = "rgba(255,255,255,0.93)";
+      ctx.font = rect.rh > 62 ? "600 11px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif" : "600 10px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif";
+      ctx.fillText(rect.title, rect.rx + 6, rect.ry + 14);
+
+      if (rect.rh > 36) {
         ctx.fillStyle = "rgba(255,255,255,0.72)";
-        ctx.font = "11px Georgia";
-        ctx.fillText(`${fmtWorkers(rect.employment_workers)} workers`, rect.rx + 8, rect.ry + 34);
+        ctx.font = "10px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif";
+        ctx.fillText(`${rect.exposure}/10 · ${fmtWorkers(rect.employment_workers)} workers`, rect.rx + 6, rect.ry + 27);
       }
+      ctx.restore();
     }
   }
 }
 
 function layoutScatter() {
-  const pad = { top: 26, right: 28, bottom: 48, left: 56 };
+  const pad = { top: 22, right: 28, bottom: 42, left: 42 };
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
   const innerW = w - pad.left - pad.right;
   const innerH = h - pad.top - pad.bottom;
-  const maxWorkers = Math.max(...data.map(d => d.employment_workers), 1);
+  const maxWorkers = Math.max(...data.map(row => row.employment_workers), 1);
 
   points = data.map(row => ({
     ...row,
     cx: pad.left + (row.demand_index / 100) * innerW,
-    cy: pad.top + (1 - (row.exposure / 10)) * innerH,
-    radius: 5 + Math.sqrt(row.employment_workers / maxWorkers) * 36,
+    cy: pad.top + (1 - row.exposure / 10) * innerH,
+    radius: 4 + Math.sqrt(row.employment_workers / maxWorkers) * 30,
   }));
 }
 
 function drawScatter() {
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
-  ctx.strokeStyle = "rgba(255,255,255,0.15)";
+  ctx.strokeStyle = "rgba(255,255,255,0.14)";
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(56, 26);
-  ctx.lineTo(56, h - 48);
-  ctx.lineTo(w - 28, h - 48);
+  ctx.moveTo(42, 22);
+  ctx.lineTo(42, h - 42);
+  ctx.lineTo(w - 28, h - 42);
   ctx.stroke();
 
   ctx.fillStyle = "rgba(255,255,255,0.55)";
-  ctx.font = "12px Georgia";
-  ctx.fillText("AI exposure", 20, 22);
-  ctx.fillText("Demand index", w - 120, h - 18);
+  ctx.font = "11px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif";
+  ctx.fillText("AI exposure", 10, 18);
+  ctx.fillText("Demand index", w - 100, h - 14);
 
   for (const point of points) {
     ctx.beginPath();
-    ctx.fillStyle = exposureColor(point.exposure, hovered === point ? 0.95 : 0.72);
+    ctx.fillStyle = exposureColorCSS(point.exposure, point === hovered ? 0.95 : 0.7);
     ctx.arc(point.cx, point.cy, point.radius, 0, Math.PI * 2);
     ctx.fill();
-    if (hovered === point) {
+    if (point === hovered) {
       ctx.strokeStyle = "rgba(255,255,255,0.85)";
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -538,12 +683,16 @@ function drawScatter() {
 }
 
 function draw() {
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
-  canvas.width = Math.floor(w * dpr);
-  canvas.height = Math.floor(h * dpr);
+  const sidebarW = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sidebar-w"), 10) || 220;
+  const mobile = window.innerWidth <= 900;
+  const w = mobile ? window.innerWidth : window.innerWidth - sidebarW;
+  const h = mobile ? Math.max(window.innerHeight * 0.68, 520) : window.innerHeight;
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.fillStyle = "#081018";
+  ctx.fillStyle = "#0c1016";
   ctx.fillRect(0, 0, w, h);
 
   if (currentView === "treemap") {
@@ -557,30 +706,29 @@ function draw() {
 
 function pick(mx, my) {
   if (currentView === "treemap") {
-    hovered = rects.find(r => mx >= r.rx && mx <= r.rx + r.rw && my >= r.ry && my <= r.ry + r.rh) || null;
+    hovered = rects.find(rect => mx >= rect.rx && mx <= rect.rx + rect.rw && my >= rect.ry && my <= rect.ry + rect.rh) || null;
   } else {
-    hovered = points.find(p => Math.hypot(mx - p.cx, my - p.cy) <= p.radius) || null;
+    hovered = points.find(point => Math.hypot(mx - point.cx, my - point.cy) <= point.radius) || null;
   }
 }
 
 function showTooltip(row, x, y) {
   tooltip.querySelector(".tt-title").textContent = row.title;
-  tooltip.querySelector(".tt-code").textContent = `NCO 2004 ${row.nco2004_3d} · NCO 2015 ${row.nco2015_3d}`;
+  tooltip.querySelector(".tt-exposure").textContent = `${row.exposure}/10 exposure · ${Math.round((row.exposure_confidence || 0) * 100)}% confidence`;
   tooltip.querySelector(".tt-grid").innerHTML = [
-    ["Workers", fmtWorkers(row.employment_workers)],
+    ["NCO 2004", row.nco2004_3d],
+    ["NCO 2015", row.nco2015_3d],
+    ["Workers", fmtWorkersLong(row.employment_workers)],
     ["Worker share", `${row.worker_share.toFixed(2)}%`],
-    ["Monthly earnings", fmtInr(row.median_monthly_earnings_inr)],
-    ["Demand index", `${row.demand_index}/100`],
+    ["Pay", `${fmtInr(row.median_monthly_earnings_inr)}/mo`],
+    ["Demand", `${row.demand_index}/100`],
     ["Vacancies (90d)", row.vacancies_90d.toLocaleString("en-IN")],
-    ["Exposure", `${row.exposure}/10`],
-    ["Confidence", `${Math.round((row.exposure_confidence || 0) * 100)}%`],
   ].map(([label, value]) => `<div class="label">${label}</div><div class="value">${value}</div>`).join("");
   tooltip.querySelector(".tt-body").textContent = row.exposure_rationale || "";
-  tooltip.querySelector(".tt-sources").textContent =
-    `Sources: ${row.sources.map(source => `${source.name} (${source.status})`).join("; ")}`;
+  tooltip.querySelector(".tt-sources").textContent = row.sources.map(source => `${source.name} (${source.status})`).join("; ");
   tooltip.classList.add("visible");
-  tooltip.style.left = `${Math.min(window.innerWidth - tooltip.offsetWidth - 18, x + 18)}px`;
-  tooltip.style.top = `${Math.min(window.innerHeight - tooltip.offsetHeight - 18, y + 18)}px`;
+  tooltip.style.left = `${Math.min(window.innerWidth - tooltip.offsetWidth - 16, x + 16)}px`;
+  tooltip.style.top = `${Math.min(window.innerHeight - tooltip.offsetHeight - 16, y + 16)}px`;
 }
 
 function hideTooltip() {
@@ -592,7 +740,7 @@ function drawLegend() {
   const gctx = legend.getContext("2d");
   const gradient = gctx.createLinearGradient(0, 0, legend.width, 0);
   for (let i = 0; i <= 10; i++) {
-    gradient.addColorStop(i / 10, exposureColor(i, 1));
+    gradient.addColorStop(i / 10, exposureColorCSS(i, 1));
   }
   gctx.fillStyle = gradient;
   gctx.fillRect(0, 0, legend.width, legend.height);
@@ -631,6 +779,10 @@ fetch("data.json")
   .then(response => response.json())
   .then(json => {
     data = json;
+    document.querySelector(".subtitle").innerHTML =
+      `${data.length} occupation groups &middot; area = workers &middot; color = AI exposure<br>` +
+      `India adaptation using NCO 2004 3-digit groups<br>` +
+      `Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>`;
     computeStats();
     drawLegend();
     draw();

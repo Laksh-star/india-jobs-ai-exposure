@@ -6,7 +6,25 @@ This repository is an adaptation, not a forked continuation of the upstream proj
 
 The repo now ships with a transparent **seed dataset** so the site is runnable without PLFS microdata or live NCS scraping. The production path is still the same 5-stage idea: build taxonomy, ingest labour stats, ingest demand, generate packets, score AI exposure, and ship a static treemap.
 
-## What's here
+![India treemap](jobs.png)
+
+## Disclaimer
+
+This project is a best-effort attempt to adapt Karpathy's original US job-exposure repo to the Indian labour market with the public and practical data sources currently available to us.
+
+Our goal was to preserve the spirit of the original project while modifying the pipeline, schema, and scoring logic to suit Indian occupations as closely as possible. The current repository therefore combines real India-oriented structure and occupation groups with the level of PLFS, NCO, and public NCS data that is realistically available for redistribution and local experimentation.
+
+It should be read as an India-focused adaptation and approximation, not as a final or official measurement of AI exposure across all Indian jobs.
+
+## Status
+
+- The default runnable build is a seed/demo India dataset.
+- The production path is planned around PLFS + NCS inputs, but those raw sources are not redistributed in this repo.
+- There is no hosted deployment config in this repository yet.
+
+## Active pipeline
+
+The public India pipeline is:
 
 - `prepare_india_seed.py` materializes the bundled India demo dataset.
 - `build_taxonomy.py` builds the canonical `nco2004_3d` taxonomy.
@@ -17,6 +35,15 @@ The repo now ships with a transparent **seed dataset** so the site is runnable w
 - `score.py` scores occupation groups with an LLM or writes the bundled seed scores.
 - `build_site_data.py` produces `site/data.json`.
 - `validate_india_data.py` validates the generated site payload.
+
+The active root entrypoints are India-only. Upstream BLS parsing scripts and source dumps are intentionally not part of the public surface anymore.
+
+## Repository layout
+
+- `india/raw/` is intentionally sparse in git and contains only redistributable seed/demo raw files.
+- `india/processed/` contains generated India packets that keep the demo build runnable.
+- `pages/`, `occupations.csv`, `scores.json`, `prompt.md`, and `site/data.json` are generated India outputs.
+- Upstream commit history is preserved, so GitHub contributors include the original upstream authors alongside India-adaptation commits.
 
 ## Data model
 
@@ -81,6 +108,8 @@ uv run python validate_india_data.py
 
 `process.py` and `make_csv.py` currently default to the seed bundle when richer upstream files are not present. That keeps the repo runnable while leaving room for the real PLFS + NCS ingestion path.
 
+See `india/raw/README.md` for the expected raw filenames, source-acquisition notes, and what is intentionally not checked into the repo.
+
 ## Setup
 
 ```bash
@@ -88,8 +117,10 @@ uv sync
 uv run playwright install chromium
 ```
 
-OpenRouter scoring still requires:
+Optional live rescoring via OpenRouter requires:
 
 ```bash
 OPENROUTER_API_KEY=your_key_here
 ```
+
+The default seed/demo flow does **not** require an API key. You only need `OPENROUTER_API_KEY` if you want to run `score.py` without `--seed` and generate fresh LLM exposure scores.
