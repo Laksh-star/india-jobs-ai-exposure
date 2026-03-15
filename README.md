@@ -2,7 +2,7 @@
 
 Adapted from [`karpathy/jobs`](https://github.com/karpathy/jobs), with the same static-site shape and a rewritten India-specific labour-market pipeline based on **NCO 2004 3-digit occupation groups**.
 
-Live demo: [laksh-star.github.io/india-jobs-ai-exposure/site/](https://laksh-star.github.io/india-jobs-ai-exposure/site/)
+Live demo: [laksh-star.github.io/india-jobs-ai-exposure/](https://laksh-star.github.io/india-jobs-ai-exposure/)
 
 This repository is an adaptation, not a forked continuation of the upstream project. Upstream remains Karpathy's original US-market implementation.
 
