@@ -62,6 +62,41 @@ a { color: #79a7ff; }
   gap: 6px;
 }
 
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-button {
+  padding: 5px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.nav-button[hidden] {
+  display: none;
+}
+
+.nav-path {
+  font-size: 11px;
+  color: var(--fg);
+  line-height: 1.4;
+}
+
+.scope-note {
+  font-size: 10px;
+  color: var(--fg2);
+  line-height: 1.45;
+}
+
 .section h3 {
   font-size: 10px;
   font-weight: 600;
@@ -292,7 +327,7 @@ canvas#canvas {
 <div id="sidebar">
   <div>
     <h1>AI Exposure of the Indian Job Market</h1>
-    <div class="subtitle">
+    <div class="subtitle" id="subtitle">
       28 occupation groups · area = workers · color = AI exposure<br>
       India adaptation using NCO 2004 3-digit groups<br>
       Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>
@@ -302,6 +337,15 @@ canvas#canvas {
   <div class="toggle">
     <button class="active" data-view="treemap">Treemap</button>
     <button data-view="scatter">Exposure vs Demand</button>
+  </div>
+
+  <div class="section">
+    <h3>Treemap level</h3>
+    <div class="nav-row">
+      <button class="nav-button" id="drillUp" hidden>Back</button>
+      <div class="nav-path" id="navPath">All India · NCO major groups</div>
+    </div>
+    <div class="scope-note" id="scopeNote">Click a major-group tile to drill into occupations.</div>
   </div>
 
   <div class="section">
@@ -369,6 +413,19 @@ let data = [];
 let rects = [];
 let points = [];
 let hovered = null;
+let activeMajorGroup = null;
+
+const majorGroupLabels = {
+  "1": "Managers and senior officials",
+  "2": "Professionals",
+  "3": "Technicians and associate professionals",
+  "4": "Clerks",
+  "5": "Service, sales and care workers",
+  "6": "Skilled agricultural and fishery workers",
+  "7": "Craft and related trades workers",
+  "8": "Plant, machine operators and assemblers",
+  "9": "Elementary occupations",
+};
 
 function fmtWorkers(n) {
   if (n == null) return "?";
@@ -386,6 +443,72 @@ function fmtWorkersLong(n) {
 function fmtInr(n) {
   if (n == null) return "?";
   return `INR ${n.toLocaleString("en-IN")}`;
+}
+
+function prettifyCategory(category) {
+  return String(category || "")
+    .split("-")
+    .map(part => part ? part[0].toUpperCase() + part.slice(1) : part)
+    .join(" ");
+}
+
+function weightedAverage(rows, key) {
+  const total = rows.reduce((sum, row) => sum + (row.employment_workers || 0), 0);
+  if (!total) return 0;
+  return rows.reduce((sum, row) => sum + ((row[key] || 0) * (row.employment_workers || 0)), 0) / total;
+}
+
+function majorGroupKey(row) {
+  return String(row.nco2004_3d || "").trim()[0] || "other";
+}
+
+function majorGroupLabel(key) {
+  return majorGroupLabels[key] || "Other / Unmapped";
+}
+
+function scopeRows() {
+  return activeMajorGroup
+    ? data.filter(row => majorGroupKey(row) === activeMajorGroup)
+    : data;
+}
+
+function majorGroupSummary(rows) {
+  return Object.entries(rows.reduce((acc, row) => {
+    acc[row.category] = (acc[row.category] || 0) + row.employment_workers;
+    return acc;
+  }, {}))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([category]) => prettifyCategory(category))
+    .join(", ");
+}
+
+function buildMajorGroupNodes() {
+  const totalWorkers = data.reduce((sum, row) => sum + row.employment_workers, 0);
+  const groups = {};
+  for (const row of data) {
+    const key = majorGroupKey(row);
+    (groups[key] ||= []).push(row);
+  }
+  return Object.entries(groups)
+    .map(([key, rows]) => ({
+      kind: "major-group",
+      groupKey: key,
+      title: majorGroupLabel(key),
+      value: rows.reduce((sum, row) => sum + row.employment_workers, 0),
+      employment_workers: rows.reduce((sum, row) => sum + row.employment_workers, 0),
+      worker_share: totalWorkers ? (rows.reduce((sum, row) => sum + row.employment_workers, 0) / totalWorkers) * 100 : 0,
+      exposure: weightedAverage(rows, "exposure"),
+      exposure_confidence: weightedAverage(rows, "exposure_confidence"),
+      median_monthly_earnings_inr: Math.round(weightedAverage(rows, "median_monthly_earnings_inr")),
+      demand_index: Math.round(weightedAverage(rows, "demand_index")),
+      vacancies_90d: rows.reduce((sum, row) => sum + (row.vacancies_90d || 0), 0),
+      itemCount: rows.length,
+      topCategories: majorGroupSummary(rows),
+      exposure_rationale: `${rows.length} occupation groups roll up into this major group in the India dataset.`,
+      sources: [{ name: "Derived from India site data", status: "aggregated" }],
+    }))
+    .sort((a, b) => b.employment_workers - a.employment_workers);
 }
 
 function exposureColor(score) {
@@ -529,20 +652,24 @@ function renderHorizontalChart(el, rows) {
 }
 
 function computeStats() {
-  const totalWorkers = data.reduce((sum, row) => sum + row.employment_workers, 0);
+  const rows = scopeRows();
+  const totalWorkers = rows.reduce((sum, row) => sum + row.employment_workers, 0);
   const weightedExposure = totalWorkers
-    ? data.reduce((sum, row) => sum + row.exposure * row.employment_workers, 0) / totalWorkers
+    ? rows.reduce((sum, row) => sum + row.exposure * row.employment_workers, 0) / totalWorkers
     : 0;
-  const highExposureWorkers = data
+  const highExposureWorkers = rows
     .filter(row => row.exposure >= 7)
     .reduce((sum, row) => sum + row.employment_workers, 0);
 
   document.getElementById("statWorkers").textContent = fmtWorkers(totalWorkers);
   document.getElementById("statExposure").textContent = weightedExposure.toFixed(1);
   document.getElementById("statHighExposure").textContent = fmtWorkers(highExposureWorkers);
+  document.getElementById("statHighExposureDesc").textContent = activeMajorGroup
+    ? "workers in high-exposure groups (7+) within this major group"
+    : "workers in high-exposure groups (7+)";
 
   const byExposure = Array.from({ length: 11 }, (_, score) =>
-    data.filter(row => row.exposure === score).reduce((sum, row) => sum + row.employment_workers, 0)
+    rows.filter(row => row.exposure === score).reduce((sum, row) => sum + row.employment_workers, 0)
   );
   const maxBin = Math.max(...byExposure, 1);
   const histogram = document.getElementById("histogram");
@@ -565,44 +692,36 @@ function computeStats() {
     ["75k+", 75000, Infinity],
   ];
   renderHorizontalChart("payChart", payBands.map(([label, lo, hi]) => {
-    const rows = data.filter(row => row.median_monthly_earnings_inr >= lo && row.median_monthly_earnings_inr < hi);
-    return { label, value: categoryExposure(rows) };
+    const bandRows = rows.filter(row => row.median_monthly_earnings_inr >= lo && row.median_monthly_earnings_inr < hi);
+    return { label, value: categoryExposure(bandRows) };
   }).filter(row => row.value > 0));
 
-  const byCategory = Object.entries(data.reduce((acc, row) => {
+  const byCategory = Object.entries(rows.reduce((acc, row) => {
     (acc[row.category] ||= []).push(row);
     return acc;
-  }, {})).map(([label, rows]) => ({ label: label.slice(0, 10), value: categoryExposure(rows) }));
+  }, {})).map(([label, bucket]) => ({ label: prettifyCategory(label).slice(0, 12), value: categoryExposure(bucket) }));
   renderHorizontalChart("categoryChart", byCategory.sort((a, b) => b.value - a.value).slice(0, 5));
 }
 
 function layoutTreemap() {
   const margin = 12;
-  const gap = 1.5;
+  const gap = activeMajorGroup ? 2 : 3;
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
-  const byCategory = {};
-  for (const row of data) {
-    (byCategory[row.category] ||= []).push(row);
-  }
-  const categories = Object.keys(byCategory).map(cat => ({
-    cat,
-    items: byCategory[cat].sort((a, b) => b.employment_workers - a.employment_workers),
-    value: byCategory[cat].reduce((sum, row) => sum + row.employment_workers, 0),
-  })).sort((a, b) => b.value - a.value);
+  const nodes = activeMajorGroup
+    ? scopeRows()
+        .slice()
+        .sort((a, b) => b.employment_workers - a.employment_workers)
+        .map(row => ({ ...row, kind: "occupation", value: row.employment_workers }))
+    : buildMajorGroupNodes().map(node => ({ ...node, value: node.employment_workers }));
 
-  rects = [];
-  const catRects = squarify(categories, margin, margin, w - margin * 2, h - margin * 2);
-  for (const catRect of catRects) {
-    const innerRects = squarify(
-      catRect.items.map(row => ({ ...row, value: row.employment_workers })),
-      catRect.rx + gap,
-      catRect.ry + gap,
-      catRect.rw - gap * 2,
-      catRect.rh - gap * 2
-    );
-    rects.push(...innerRects);
-  }
+  rects = squarify(nodes, margin, margin, w - margin * 2, h - margin * 2).map(rect => ({
+    ...rect,
+    rx: rect.rx + gap / 2,
+    ry: rect.ry + gap / 2,
+    rw: Math.max(0, rect.rw - gap),
+    rh: Math.max(0, rect.rh - gap),
+  }));
 }
 
 function drawTreemap() {
@@ -630,7 +749,17 @@ function drawTreemap() {
       if (rect.rh > 36) {
         ctx.fillStyle = "rgba(255,255,255,0.72)";
         ctx.font = "10px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif";
-        ctx.fillText(`${rect.exposure}/10 · ${fmtWorkers(rect.employment_workers)} workers`, rect.rx + 6, rect.ry + 27);
+        if (rect.kind === "major-group") {
+          ctx.fillText(`${rect.itemCount} groups · ${fmtWorkers(rect.employment_workers)} workers`, rect.rx + 6, rect.ry + 27);
+        } else {
+          ctx.fillText(`${rect.exposure}/10 · ${fmtWorkers(rect.employment_workers)} workers`, rect.rx + 6, rect.ry + 27);
+        }
+      }
+
+      if (rect.kind === "major-group" && rect.rh > 52) {
+        ctx.fillStyle = "rgba(255,255,255,0.64)";
+        ctx.font = "10px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif";
+        ctx.fillText(`${rect.exposure.toFixed(1)}/10 weighted exposure`, rect.rx + 6, rect.ry + 40);
       }
       ctx.restore();
     }
@@ -643,9 +772,10 @@ function layoutScatter() {
   const h = canvas.clientHeight;
   const innerW = w - pad.left - pad.right;
   const innerH = h - pad.top - pad.bottom;
-  const maxWorkers = Math.max(...data.map(row => row.employment_workers), 1);
+  const rows = scopeRows();
+  const maxWorkers = Math.max(...rows.map(row => row.employment_workers), 1);
 
-  points = data.map(row => ({
+  points = rows.map(row => ({
     ...row,
     cx: pad.left + (row.demand_index / 100) * innerW,
     cy: pad.top + (1 - row.exposure / 10) * innerH,
@@ -707,25 +837,42 @@ function draw() {
 function pick(mx, my) {
   if (currentView === "treemap") {
     hovered = rects.find(rect => mx >= rect.rx && mx <= rect.rx + rect.rw && my >= rect.ry && my <= rect.ry + rect.rh) || null;
+    canvas.style.cursor = hovered && hovered.kind === "major-group" ? "pointer" : "default";
   } else {
     hovered = points.find(point => Math.hypot(mx - point.cx, my - point.cy) <= point.radius) || null;
+    canvas.style.cursor = hovered ? "pointer" : "default";
   }
 }
 
 function showTooltip(row, x, y) {
-  tooltip.querySelector(".tt-title").textContent = row.title;
-  tooltip.querySelector(".tt-exposure").textContent = `${row.exposure}/10 exposure · ${Math.round((row.exposure_confidence || 0) * 100)}% confidence`;
-  tooltip.querySelector(".tt-grid").innerHTML = [
-    ["NCO 2004", row.nco2004_3d],
-    ["NCO 2015", row.nco2015_3d],
-    ["Workers", fmtWorkersLong(row.employment_workers)],
-    ["Worker share", `${row.worker_share.toFixed(2)}%`],
-    ["Pay", `${fmtInr(row.median_monthly_earnings_inr)}/mo`],
-    ["Demand", `${row.demand_index}/100`],
-    ["Vacancies (90d)", row.vacancies_90d.toLocaleString("en-IN")],
-  ].map(([label, value]) => `<div class="label">${label}</div><div class="value">${value}</div>`).join("");
-  tooltip.querySelector(".tt-body").textContent = row.exposure_rationale || "";
-  tooltip.querySelector(".tt-sources").textContent = row.sources.map(source => `${source.name} (${source.status})`).join("; ");
+  if (row.kind === "major-group") {
+    tooltip.querySelector(".tt-title").textContent = row.title;
+    tooltip.querySelector(".tt-exposure").textContent = `${row.exposure.toFixed(1)}/10 weighted exposure · click to drill in`;
+    tooltip.querySelector(".tt-grid").innerHTML = [
+      ["Level", "NCO major group"],
+      ["Occupation groups", row.itemCount],
+      ["Workers", fmtWorkersLong(row.employment_workers)],
+      ["Worker share", `${row.worker_share.toFixed(2)}%`],
+      ["Pay", `${fmtInr(row.median_monthly_earnings_inr)}/mo`],
+      ["Demand", `${row.demand_index}/100`],
+    ].map(([label, value]) => `<div class="label">${label}</div><div class="value">${value}</div>`).join("");
+    tooltip.querySelector(".tt-body").textContent = `Top categories: ${row.topCategories || "Mixed"}.`;
+    tooltip.querySelector(".tt-sources").textContent = "Derived from the current India occupation dataset.";
+  } else {
+    tooltip.querySelector(".tt-title").textContent = row.title;
+    tooltip.querySelector(".tt-exposure").textContent = `${row.exposure}/10 exposure · ${Math.round((row.exposure_confidence || 0) * 100)}% confidence`;
+    tooltip.querySelector(".tt-grid").innerHTML = [
+      ["NCO 2004", row.nco2004_3d],
+      ["NCO 2015", row.nco2015_3d],
+      ["Workers", fmtWorkersLong(row.employment_workers)],
+      ["Worker share", `${row.worker_share.toFixed(2)}%`],
+      ["Pay", `${fmtInr(row.median_monthly_earnings_inr)}/mo`],
+      ["Demand", `${row.demand_index}/100`],
+      ["Vacancies (90d)", row.vacancies_90d.toLocaleString("en-IN")],
+    ].map(([label, value]) => `<div class="label">${label}</div><div class="value">${value}</div>`).join("");
+    tooltip.querySelector(".tt-body").textContent = row.exposure_rationale || "";
+    tooltip.querySelector(".tt-sources").textContent = row.sources.map(source => `${source.name} (${source.status})`).join("; ");
+  }
   tooltip.classList.add("visible");
   tooltip.style.left = `${Math.min(window.innerWidth - tooltip.offsetWidth - 16, x + 16)}px`;
   tooltip.style.top = `${Math.min(window.innerHeight - tooltip.offsetHeight - 16, y + 16)}px`;
@@ -733,6 +880,34 @@ function showTooltip(row, x, y) {
 
 function hideTooltip() {
   tooltip.classList.remove("visible");
+  canvas.style.cursor = "default";
+}
+
+function updateScopeUI() {
+  const rows = scopeRows();
+  const subtitle = document.getElementById("subtitle");
+  const navPath = document.getElementById("navPath");
+  const scopeNote = document.getElementById("scopeNote");
+  const drillUp = document.getElementById("drillUp");
+
+  if (activeMajorGroup) {
+    const label = majorGroupLabel(activeMajorGroup);
+    subtitle.innerHTML =
+      `${rows.length} occupation groups in ${label}<br>` +
+      `area = workers · color = AI exposure · view follows current scope<br>` +
+      `Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>`;
+    navPath.textContent = `All India / ${label}`;
+    scopeNote.textContent = "Showing occupations inside this major group. Use Back to return to the top level.";
+    drillUp.hidden = false;
+  } else {
+    subtitle.innerHTML =
+      `${data.length} occupation groups · root grouped by NCO major groups<br>` +
+      `area = workers · color = AI exposure<br>` +
+      `Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>`;
+    navPath.textContent = "All India · NCO major groups";
+    scopeNote.textContent = "Click a major-group tile to drill into occupations.";
+    drillUp.hidden = true;
+  }
 }
 
 function drawLegend() {
@@ -762,7 +937,37 @@ canvas.addEventListener("mouseleave", () => {
   draw();
 });
 
+canvas.addEventListener("click", () => {
+  if (currentView !== "treemap" || !hovered || hovered.kind !== "major-group") return;
+  activeMajorGroup = hovered.groupKey;
+  hovered = null;
+  hideTooltip();
+  updateScopeUI();
+  computeStats();
+  draw();
+});
+
 window.addEventListener("resize", draw);
+
+window.addEventListener("keydown", event => {
+  if (event.key === "Escape" && activeMajorGroup) {
+    activeMajorGroup = null;
+    hovered = null;
+    hideTooltip();
+    updateScopeUI();
+    computeStats();
+    draw();
+  }
+});
+
+document.getElementById("drillUp").addEventListener("click", () => {
+  activeMajorGroup = null;
+  hovered = null;
+  hideTooltip();
+  updateScopeUI();
+  computeStats();
+  draw();
+});
 
 document.querySelectorAll(".toggle button").forEach(button => {
   button.addEventListener("click", () => {
@@ -779,10 +984,7 @@ fetch("data.json")
   .then(response => response.json())
   .then(json => {
     data = json;
-    document.querySelector(".subtitle").innerHTML =
-      `${data.length} occupation groups &middot; area = workers &middot; color = AI exposure<br>` +
-      `India adaptation using NCO 2004 3-digit groups<br>` +
-      `Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>`;
+    updateScopeUI();
     computeStats();
     drawLegend();
     draw();
