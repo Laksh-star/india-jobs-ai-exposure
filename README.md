@@ -2,6 +2,8 @@
 
 Adapted from [`karpathy/jobs`](https://github.com/karpathy/jobs), with the same static-site shape and a rewritten India-specific labour-market pipeline based on **NCO 2004 3-digit occupation groups**.
 
+Live demo: [laksh-star.github.io/india-jobs-ai-exposure](https://laksh-star.github.io/india-jobs-ai-exposure/)
+
 This repository is an adaptation, not a forked continuation of the upstream project. Upstream remains Karpathy's original US-market implementation.
 
 The repo now ships with a transparent **seed dataset** so the site is runnable without PLFS microdata or live NCS scraping. The production path is still the same 5-stage idea: build taxonomy, ingest labour stats, ingest demand, generate packets, score AI exposure, and ship a static treemap.
@@ -20,7 +22,8 @@ It should be read as an India-focused adaptation and approximation, not as a fin
 
 - The default runnable build is a seed/demo India dataset.
 - The production path is planned around PLFS + NCS inputs, but those raw sources are not redistributed in this repo.
-- There is no hosted deployment config in this repository yet.
+- GitHub Pages deployment is configured from the `site/` directory via GitHub Actions.
+- If the Pages site does not appear after the first workflow run, set the repository's Pages source to `GitHub Actions` in GitHub Settings.
 
 ## Active pipeline
 
