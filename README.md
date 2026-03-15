@@ -6,7 +6,7 @@ Live demo: [laksh-star.github.io/india-jobs-ai-exposure/site/](https://laksh-sta
 
 This repository is an adaptation, not a forked continuation of the upstream project. Upstream remains Karpathy's original US-market implementation.
 
-The repo now ships with a transparent **seed dataset** so the site is runnable without PLFS microdata or live NCS scraping. The production path is still the same 5-stage idea: build taxonomy, ingest labour stats, ingest demand, generate packets, score AI exposure, and ship a static treemap.
+The repo now ships with a transparent **seed dataset** so the site is runnable without PLFS microdata or live NCS scraping. The production path is still the same 5-stage idea: build taxonomy, ingest labour stats, ingest demand, generate packets, score AI exposure, and ship a static treemap. The public UI now adds a denser display hierarchy of representative role nodes while keeping `nco2004_3d` as the canonical labour-market unit underneath.
 
 ![India treemap](jobs.png)
 
@@ -50,7 +50,13 @@ The active root entrypoints are India-only. Upstream BLS parsing scripts and sou
 
 ## Data model
 
-The canonical join key is **`nco2004_3d`**. The site payload includes:
+The canonical join key is **`nco2004_3d`**. `site/data.json` is a structured payload with:
+
+- `canonical_rows`: the 28 canonical NCO-group records used for sizing and provenance
+- `display_nodes`: a 3-level display hierarchy of `major_group`, `nco_group`, and derived `role` nodes
+- `meta`: payload version, counts, and approximation notes
+
+Canonical rows include the core labour-market fields such as:
 
 - `country`
 - `nco2004_3d`
@@ -65,6 +71,8 @@ The canonical join key is **`nco2004_3d`**. The site payload includes:
 - `education_mix`
 - `rural_urban_split`
 - `sources`
+
+Derived role nodes reconcile exactly back to their parent canonical group for employment, but their pay, demand, and exposure values are display-layer approximations.
 
 ## Seed demo
 

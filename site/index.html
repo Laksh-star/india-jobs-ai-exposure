@@ -409,23 +409,15 @@ const ctx = canvas.getContext("2d");
 const tooltip = document.getElementById("tooltip");
 let dpr = window.devicePixelRatio || 1;
 let currentView = "treemap";
-let data = [];
+let payload = { canonical_rows: [], display_nodes: [], meta: {} };
+let canonicalRows = [];
+let displayNodes = [];
+let nodesById = new Map();
+let childrenByParent = new Map();
+let currentScopeId = null;
 let rects = [];
 let points = [];
 let hovered = null;
-let activeMajorGroup = null;
-
-const majorGroupLabels = {
-  "1": "Managers and senior officials",
-  "2": "Professionals",
-  "3": "Technicians and associate professionals",
-  "4": "Clerks",
-  "5": "Service, sales and care workers",
-  "6": "Skilled agricultural and fishery workers",
-  "7": "Craft and related trades workers",
-  "8": "Plant, machine operators and assemblers",
-  "9": "Elementary occupations",
-};
 
 function fmtWorkers(n) {
   if (n == null) return "?";
@@ -458,57 +450,37 @@ function weightedAverage(rows, key) {
   return rows.reduce((sum, row) => sum + ((row[key] || 0) * (row.employment_workers || 0)), 0) / total;
 }
 
-function majorGroupKey(row) {
-  return String(row.nco2004_3d || "").trim()[0] || "other";
+function currentScopeNode() {
+  return currentScopeId ? nodesById.get(currentScopeId) || null : null;
 }
 
-function majorGroupLabel(key) {
-  return majorGroupLabels[key] || "Other / Unmapped";
+function childNodes(parentId) {
+  return (childrenByParent.get(parentId) || []).slice().sort((a, b) => b.employment_workers - a.employment_workers);
 }
 
-function scopeRows() {
-  return activeMajorGroup
-    ? data.filter(row => majorGroupKey(row) === activeMajorGroup)
-    : data;
+function currentDisplayNodes() {
+  return childNodes(currentScopeId);
 }
 
-function majorGroupSummary(rows) {
-  return Object.entries(rows.reduce((acc, row) => {
-    acc[row.category] = (acc[row.category] || 0) + row.employment_workers;
-    return acc;
-  }, {}))
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([category]) => prettifyCategory(category))
-    .join(", ");
+function statsRows() {
+  const scope = currentScopeNode();
+  if (!scope) return canonicalRows;
+  const rows = childNodes(scope.node_id);
+  return rows.length ? rows : [scope];
 }
 
-function buildMajorGroupNodes() {
-  const totalWorkers = data.reduce((sum, row) => sum + row.employment_workers, 0);
-  const groups = {};
-  for (const row of data) {
-    const key = majorGroupKey(row);
-    (groups[key] ||= []).push(row);
+function pathNodes() {
+  const path = [];
+  let node = currentScopeNode();
+  while (node) {
+    path.unshift(node);
+    node = node.parent_id ? nodesById.get(node.parent_id) : null;
   }
-  return Object.entries(groups)
-    .map(([key, rows]) => ({
-      kind: "major-group",
-      groupKey: key,
-      title: majorGroupLabel(key),
-      value: rows.reduce((sum, row) => sum + row.employment_workers, 0),
-      employment_workers: rows.reduce((sum, row) => sum + row.employment_workers, 0),
-      worker_share: totalWorkers ? (rows.reduce((sum, row) => sum + row.employment_workers, 0) / totalWorkers) * 100 : 0,
-      exposure: weightedAverage(rows, "exposure"),
-      exposure_confidence: weightedAverage(rows, "exposure_confidence"),
-      median_monthly_earnings_inr: Math.round(weightedAverage(rows, "median_monthly_earnings_inr")),
-      demand_index: Math.round(weightedAverage(rows, "demand_index")),
-      vacancies_90d: rows.reduce((sum, row) => sum + (row.vacancies_90d || 0), 0),
-      itemCount: rows.length,
-      topCategories: majorGroupSummary(rows),
-      exposure_rationale: `${rows.length} occupation groups roll up into this major group in the India dataset.`,
-      sources: [{ name: "Derived from India site data", status: "aggregated" }],
-    }))
-    .sort((a, b) => b.employment_workers - a.employment_workers);
+  return path;
+}
+
+function hasChildren(node) {
+  return Boolean(node && (childrenByParent.get(node.node_id) || []).length);
 }
 
 function exposureColor(score) {
@@ -612,8 +584,8 @@ function categoryExposure(rows) {
   return rows.reduce((sum, row) => sum + row.exposure * row.employment_workers, 0) / workers;
 }
 
-function renderTierBar() {
-  const totalWorkers = data.reduce((sum, row) => sum + row.employment_workers, 0);
+function renderTierBar(rows) {
+  const totalWorkers = rows.reduce((sum, row) => sum + row.employment_workers, 0);
   const tiers = [
     ["Minimal (0-1)", 0, 1],
     ["Low (2-3)", 2, 3],
@@ -624,23 +596,27 @@ function renderTierBar() {
   const tierBar = document.getElementById("tierBar");
   tierBar.innerHTML = "";
   tiers.forEach(([name, lo, hi]) => {
-    const rows = data.filter(row => row.exposure >= lo && row.exposure <= hi);
-    const workers = rows.reduce((sum, row) => sum + row.employment_workers, 0);
+    const tierRows = rows.filter(row => Math.round(row.exposure) >= lo && Math.round(row.exposure) <= hi);
+    const workers = tierRows.reduce((sum, row) => sum + row.employment_workers, 0);
     const pct = totalWorkers ? Math.round((workers / totalWorkers) * 100) : 0;
-    const row = document.createElement("div");
-    row.className = "tier-row";
-    row.innerHTML = `
+    const node = document.createElement("div");
+    node.className = "tier-row";
+    node.innerHTML = `
       <div class="tier-color" style="background:${exposureColorCSS((lo + hi) / 2, 0.95)}"></div>
       <div class="tier-name">${name}</div>
       <div class="tier-workers">${fmtWorkers(workers)}</div>
       <div class="tier-pct">${pct}%</div>
     `;
-    tierBar.appendChild(row);
+    tierBar.appendChild(node);
   });
 }
 
 function renderHorizontalChart(el, rows) {
   const node = document.getElementById(el);
+  if (!rows.length) {
+    node.innerHTML = "";
+    return;
+  }
   const maxVal = Math.max(...rows.map(row => row.value), 1);
   node.innerHTML = rows.map(row => `
     <div class="hbar-row">
@@ -652,7 +628,7 @@ function renderHorizontalChart(el, rows) {
 }
 
 function computeStats() {
-  const rows = scopeRows();
+  const rows = statsRows();
   const totalWorkers = rows.reduce((sum, row) => sum + row.employment_workers, 0);
   const weightedExposure = totalWorkers
     ? rows.reduce((sum, row) => sum + row.exposure * row.employment_workers, 0) / totalWorkers
@@ -664,12 +640,14 @@ function computeStats() {
   document.getElementById("statWorkers").textContent = fmtWorkers(totalWorkers);
   document.getElementById("statExposure").textContent = weightedExposure.toFixed(1);
   document.getElementById("statHighExposure").textContent = fmtWorkers(highExposureWorkers);
-  document.getElementById("statHighExposureDesc").textContent = activeMajorGroup
-    ? "workers in high-exposure groups (7+) within this major group"
+  document.getElementById("statHighExposureDesc").textContent = currentScopeNode()
+    ? "workers in high-exposure nodes (7+) within this scope"
     : "workers in high-exposure groups (7+)";
 
   const byExposure = Array.from({ length: 11 }, (_, score) =>
-    rows.filter(row => row.exposure === score).reduce((sum, row) => sum + row.employment_workers, 0)
+    rows
+      .filter(row => Math.round(row.exposure) === score)
+      .reduce((sum, row) => sum + row.employment_workers, 0)
   );
   const maxBin = Math.max(...byExposure, 1);
   const histogram = document.getElementById("histogram");
@@ -682,7 +660,7 @@ function computeStats() {
     histogram.appendChild(bar);
   });
 
-  renderTierBar();
+  renderTierBar(rows);
 
   const payBands = [
     ["<20k", 0, 20000],
@@ -697,7 +675,8 @@ function computeStats() {
   }).filter(row => row.value > 0));
 
   const byCategory = Object.entries(rows.reduce((acc, row) => {
-    (acc[row.category] ||= []).push(row);
+    const key = row.category || "uncategorised";
+    (acc[key] ||= []).push(row);
     return acc;
   }, {})).map(([label, bucket]) => ({ label: prettifyCategory(label).slice(0, 12), value: categoryExposure(bucket) }));
   renderHorizontalChart("categoryChart", byCategory.sort((a, b) => b.value - a.value).slice(0, 5));
@@ -705,15 +684,12 @@ function computeStats() {
 
 function layoutTreemap() {
   const margin = 12;
-  const gap = activeMajorGroup ? 2 : 3;
+  const gap = currentScopeNode() ? 2 : 3;
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
-  const nodes = activeMajorGroup
-    ? scopeRows()
-        .slice()
-        .sort((a, b) => b.employment_workers - a.employment_workers)
-        .map(row => ({ ...row, kind: "occupation", value: row.employment_workers }))
-    : buildMajorGroupNodes().map(node => ({ ...node, value: node.employment_workers }));
+  const nodes = currentDisplayNodes()
+    .map(node => ({ ...node, value: node.employment_workers }))
+    .sort((a, b) => b.value - a.value);
 
   rects = squarify(nodes, margin, margin, w - margin * 2, h - margin * 2).map(rect => ({
     ...rect,
@@ -722,6 +698,16 @@ function layoutTreemap() {
     rw: Math.max(0, rect.rw - gap),
     rh: Math.max(0, rect.rh - gap),
   }));
+}
+
+function subtitleForNode(node) {
+  if (node.node_kind === "major_group") {
+    return `${node.display_child_count} groups · ${fmtWorkers(node.employment_workers)} workers`;
+  }
+  if (node.node_kind === "nco_group") {
+    return `${node.display_child_count} roles · ${fmtWorkers(node.employment_workers)} workers`;
+  }
+  return `${node.exposure.toFixed(1)}/10 · ${fmtWorkers(node.employment_workers)} workers`;
 }
 
 function drawTreemap() {
@@ -749,17 +735,13 @@ function drawTreemap() {
       if (rect.rh > 36) {
         ctx.fillStyle = "rgba(255,255,255,0.72)";
         ctx.font = "10px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif";
-        if (rect.kind === "major-group") {
-          ctx.fillText(`${rect.itemCount} groups · ${fmtWorkers(rect.employment_workers)} workers`, rect.rx + 6, rect.ry + 27);
-        } else {
-          ctx.fillText(`${rect.exposure}/10 · ${fmtWorkers(rect.employment_workers)} workers`, rect.rx + 6, rect.ry + 27);
-        }
+        ctx.fillText(subtitleForNode(rect), rect.rx + 6, rect.ry + 27);
       }
 
-      if (rect.kind === "major-group" && rect.rh > 52) {
+      if (hasChildren(rect) && rect.rh > 52) {
         ctx.fillStyle = "rgba(255,255,255,0.64)";
         ctx.font = "10px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif";
-        ctx.fillText(`${rect.exposure.toFixed(1)}/10 weighted exposure`, rect.rx + 6, rect.ry + 40);
+        ctx.fillText("click to drill in", rect.rx + 6, rect.ry + 40);
       }
       ctx.restore();
     }
@@ -767,12 +749,12 @@ function drawTreemap() {
 }
 
 function layoutScatter() {
+  const rows = currentDisplayNodes();
   const pad = { top: 22, right: 28, bottom: 42, left: 42 };
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
   const innerW = w - pad.left - pad.right;
   const innerH = h - pad.top - pad.bottom;
-  const rows = scopeRows();
   const maxWorkers = Math.max(...rows.map(row => row.employment_workers), 1);
 
   points = rows.map(row => ({
@@ -837,42 +819,39 @@ function draw() {
 function pick(mx, my) {
   if (currentView === "treemap") {
     hovered = rects.find(rect => mx >= rect.rx && mx <= rect.rx + rect.rw && my >= rect.ry && my <= rect.ry + rect.rh) || null;
-    canvas.style.cursor = hovered && hovered.kind === "major-group" ? "pointer" : "default";
   } else {
     hovered = points.find(point => Math.hypot(mx - point.cx, my - point.cy) <= point.radius) || null;
-    canvas.style.cursor = hovered ? "pointer" : "default";
   }
+  canvas.style.cursor = hovered && hasChildren(hovered) ? "pointer" : "default";
 }
 
-function showTooltip(row, x, y) {
-  if (row.kind === "major-group") {
-    tooltip.querySelector(".tt-title").textContent = row.title;
-    tooltip.querySelector(".tt-exposure").textContent = `${row.exposure.toFixed(1)}/10 weighted exposure · click to drill in`;
-    tooltip.querySelector(".tt-grid").innerHTML = [
-      ["Level", "NCO major group"],
-      ["Occupation groups", row.itemCount],
-      ["Workers", fmtWorkersLong(row.employment_workers)],
-      ["Worker share", `${row.worker_share.toFixed(2)}%`],
-      ["Pay", `${fmtInr(row.median_monthly_earnings_inr)}/mo`],
-      ["Demand", `${row.demand_index}/100`],
-    ].map(([label, value]) => `<div class="label">${label}</div><div class="value">${value}</div>`).join("");
-    tooltip.querySelector(".tt-body").textContent = `Top categories: ${row.topCategories || "Mixed"}.`;
-    tooltip.querySelector(".tt-sources").textContent = "Derived from the current India occupation dataset.";
-  } else {
-    tooltip.querySelector(".tt-title").textContent = row.title;
-    tooltip.querySelector(".tt-exposure").textContent = `${row.exposure}/10 exposure · ${Math.round((row.exposure_confidence || 0) * 100)}% confidence`;
-    tooltip.querySelector(".tt-grid").innerHTML = [
-      ["NCO 2004", row.nco2004_3d],
-      ["NCO 2015", row.nco2015_3d],
-      ["Workers", fmtWorkersLong(row.employment_workers)],
-      ["Worker share", `${row.worker_share.toFixed(2)}%`],
-      ["Pay", `${fmtInr(row.median_monthly_earnings_inr)}/mo`],
-      ["Demand", `${row.demand_index}/100`],
-      ["Vacancies (90d)", row.vacancies_90d.toLocaleString("en-IN")],
-    ].map(([label, value]) => `<div class="label">${label}</div><div class="value">${value}</div>`).join("");
-    tooltip.querySelector(".tt-body").textContent = row.exposure_rationale || "";
-    tooltip.querySelector(".tt-sources").textContent = row.sources.map(source => `${source.name} (${source.status})`).join("; ");
+function sourceText(sources) {
+  return (sources || []).map(source => `${source.name} (${source.status})`).join("; ");
+}
+
+function showTooltip(node, x, y) {
+  tooltip.querySelector(".tt-title").textContent = node.title;
+  tooltip.querySelector(".tt-exposure").textContent =
+    `${node.exposure.toFixed(1)}/10 exposure · ${Math.round((node.exposure_confidence || 0) * 100)}% confidence`;
+
+  const rows = [
+    ["Level", node.node_kind.replace("_", " ")],
+    ["Approximation", node.approximation_level],
+    ["Workers", fmtWorkersLong(node.employment_workers)],
+    ["Worker share", `${node.worker_share.toFixed(2)}%`],
+    ["Pay", `${fmtInr(node.median_monthly_earnings_inr)}/mo`],
+    ["Demand", `${node.demand_index}/100`],
+    ["Vacancies (90d)", (node.vacancies_90d || 0).toLocaleString("en-IN")],
+  ];
+  if (node.canonical_nco2004_3d) rows.splice(2, 0, ["NCO 2004", node.canonical_nco2004_3d]);
+  if (node.node_kind === "role" && node.role_share != null) {
+    rows.splice(3, 0, ["Share of parent", `${Math.round(node.role_share * 100)}%`]);
   }
+  tooltip.querySelector(".tt-grid").innerHTML = rows
+    .map(([label, value]) => `<div class="label">${label}</div><div class="value">${value}</div>`)
+    .join("");
+  tooltip.querySelector(".tt-body").textContent = node.summary || "";
+  tooltip.querySelector(".tt-sources").textContent = sourceText(node.sources);
   tooltip.classList.add("visible");
   tooltip.style.left = `${Math.min(window.innerWidth - tooltip.offsetWidth - 16, x + 16)}px`;
   tooltip.style.top = `${Math.min(window.innerHeight - tooltip.offsetHeight - 16, y + 16)}px`;
@@ -884,29 +863,41 @@ function hideTooltip() {
 }
 
 function updateScopeUI() {
-  const rows = scopeRows();
   const subtitle = document.getElementById("subtitle");
   const navPath = document.getElementById("navPath");
   const scopeNote = document.getElementById("scopeNote");
   const drillUp = document.getElementById("drillUp");
+  const scope = currentScopeNode();
+  const visible = currentDisplayNodes();
+  const path = pathNodes();
 
-  if (activeMajorGroup) {
-    const label = majorGroupLabel(activeMajorGroup);
+  if (!scope) {
     subtitle.innerHTML =
-      `${rows.length} occupation groups in ${label}<br>` +
-      `area = workers · color = AI exposure · view follows current scope<br>` +
-      `Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>`;
-    navPath.textContent = `All India / ${label}`;
-    scopeNote.textContent = "Showing occupations inside this major group. Use Back to return to the top level.";
-    drillUp.hidden = false;
-  } else {
-    subtitle.innerHTML =
-      `${data.length} occupation groups · root grouped by NCO major groups<br>` +
-      `area = workers · color = AI exposure<br>` +
+      `${payload.meta.canonical_row_count} canonical groups · ${payload.meta.display_leaf_count} representative roles<br>` +
+      `root grouped by NCO major groups · area = workers · color = AI exposure<br>` +
       `Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>`;
     navPath.textContent = "All India · NCO major groups";
-    scopeNote.textContent = "Click a major-group tile to drill into occupations.";
+    scopeNote.textContent = "Click a major-group tile to drill into canonical groups.";
     drillUp.hidden = true;
+    return;
+  }
+
+  const labelPath = ["All India", ...path.map(node => node.title)];
+  navPath.textContent = labelPath.join(" / ");
+  drillUp.hidden = false;
+
+  if (scope.node_kind === "major_group") {
+    subtitle.innerHTML =
+      `${visible.length} canonical occupation groups in ${scope.title}<br>` +
+      `area = workers · color = AI exposure · scatter follows current scope<br>` +
+      `Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>`;
+    scopeNote.textContent = "Click a canonical NCO group to drill into representative role nodes.";
+  } else {
+    subtitle.innerHTML =
+      `${visible.length} representative roles in ${scope.title}<br>` +
+      `role-level values are derived approximations from the parent NCO group<br>` +
+      `Adapted from <a href="https://github.com/karpathy/jobs">karpathy/jobs</a>`;
+    scopeNote.textContent = "Derived role nodes are display approximations, not official PLFS counts.";
   }
 }
 
@@ -919,6 +910,12 @@ function drawLegend() {
   }
   gctx.fillStyle = gradient;
   gctx.fillRect(0, 0, legend.width, legend.height);
+}
+
+function refresh() {
+  updateScopeUI();
+  computeStats();
+  draw();
 }
 
 canvas.addEventListener("mousemove", event => {
@@ -938,35 +935,31 @@ canvas.addEventListener("mouseleave", () => {
 });
 
 canvas.addEventListener("click", () => {
-  if (currentView !== "treemap" || !hovered || hovered.kind !== "major-group") return;
-  activeMajorGroup = hovered.groupKey;
+  if (!hovered || !hasChildren(hovered)) return;
+  currentScopeId = hovered.node_id;
   hovered = null;
   hideTooltip();
-  updateScopeUI();
-  computeStats();
-  draw();
+  refresh();
 });
 
 window.addEventListener("resize", draw);
 
 window.addEventListener("keydown", event => {
-  if (event.key === "Escape" && activeMajorGroup) {
-    activeMajorGroup = null;
+  if (event.key === "Escape" && currentScopeId) {
+    const scope = currentScopeNode();
+    currentScopeId = scope && scope.parent_id ? scope.parent_id : null;
     hovered = null;
     hideTooltip();
-    updateScopeUI();
-    computeStats();
-    draw();
+    refresh();
   }
 });
 
 document.getElementById("drillUp").addEventListener("click", () => {
-  activeMajorGroup = null;
+  const scope = currentScopeNode();
+  currentScopeId = scope && scope.parent_id ? scope.parent_id : null;
   hovered = null;
   hideTooltip();
-  updateScopeUI();
-  computeStats();
-  draw();
+  refresh();
 });
 
 document.querySelectorAll(".toggle button").forEach(button => {
@@ -983,11 +976,18 @@ document.querySelectorAll(".toggle button").forEach(button => {
 fetch("data.json")
   .then(response => response.json())
   .then(json => {
-    data = json;
-    updateScopeUI();
-    computeStats();
+    payload = json;
+    canonicalRows = json.canonical_rows || [];
+    displayNodes = json.display_nodes || [];
+    nodesById = new Map(displayNodes.map(node => [node.node_id, node]));
+    childrenByParent = new Map();
+    for (const node of displayNodes) {
+      const list = childrenByParent.get(node.parent_id) || [];
+      list.push(node);
+      childrenByParent.set(node.parent_id, list);
+    }
     drawLegend();
-    draw();
+    refresh();
   });
 </script>
 </body>
