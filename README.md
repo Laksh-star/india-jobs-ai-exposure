@@ -4,6 +4,8 @@ Adapted from [`karpathy/jobs`](https://github.com/karpathy/jobs), with the same 
 
 Live demo: [laksh-star.github.io/india-jobs-ai-exposure/](https://laksh-star.github.io/india-jobs-ai-exposure/)
 
+Write-up: [An India Adaptation of Karpathy's AI Job Exposure Study](https://medium.com/@LakshmiNarayana_U/an-india-adaptation-of-karpathys-ai-job-exposure-study-b3d441666ae2)
+
 This repository is an adaptation, not a forked continuation of the upstream project. Upstream remains Karpathy's original US-market implementation.
 
 The repo now ships with a transparent **seed dataset** so the site is runnable without PLFS microdata or live NCS scraping. The production path is still the same 5-stage idea: build taxonomy, ingest labour stats, ingest demand, generate packets, score AI exposure, and ship a static treemap. The public UI now adds a denser display hierarchy of representative role nodes while keeping `nco2004_3d` as the canonical labour-market unit underneath.
