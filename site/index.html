@@ -4,16 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Exposure of the Indian Job Market</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c1016'/%3E%3Cpath d='M14 47V17h7l11 18 11-18h7v30h-7V29L32 46 21 29v18z' fill='%23e7a84f'/%3E%3C/svg%3E">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
   --bg: #0c1016;
   --panel: #11161d;
+  --panel-soft: #171f29;
   --panel-border: rgba(255,255,255,0.06);
   --fg: #e7eaee;
   --fg2: #8f97a3;
-  --sidebar-w: 220px;
+  --accent: #e7a84f;
+  --accent-soft: rgba(231,168,79,0.14);
+  --sidebar-w: 320px;
 }
 
 body {
@@ -62,6 +66,13 @@ a { color: #79a7ff; }
   gap: 6px;
 }
 
+.section-card {
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+}
+
 .nav-row {
   display: flex;
   align-items: center;
@@ -103,6 +114,81 @@ a { color: #79a7ff; }
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--fg2);
+}
+
+.control-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg2);
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.control-grid.single {
+  grid-template-columns: 1fr;
+}
+
+.control-input,
+.control-select {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: var(--fg);
+  font: inherit;
+}
+
+.control-input::placeholder {
+  color: rgba(231,234,238,0.38);
+}
+
+.control-input:focus,
+.control-select:focus {
+  outline: none;
+  border-color: rgba(231,168,79,0.6);
+  box-shadow: 0 0 0 3px rgba(231,168,79,0.12);
+}
+
+.ghost-button {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  color: var(--fg);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.ghost-button.accent {
+  border-color: rgba(231,168,79,0.32);
+  background: var(--accent-soft);
+}
+
+.status-note {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  color: var(--fg2);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.status-note.error {
+  background: rgba(179, 71, 71, 0.14);
+  color: #f3b0b0;
+}
+
+.results-note {
+  font-size: 11px;
+  color: var(--fg2);
+  line-height: 1.45;
 }
 
 .stat-big {
@@ -250,6 +336,237 @@ a { color: #79a7ff; }
   border-radius: 2px;
 }
 
+.detail-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    radial-gradient(circle at top right, rgba(231,168,79,0.16), transparent 36%),
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+}
+
+.detail-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.detail-title {
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.detail-meta,
+.detail-copy,
+.detail-list {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--fg2);
+}
+
+.detail-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.detail-pill {
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.detail-pill .label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg2);
+}
+
+.detail-pill .value {
+  font-size: 11px;
+  color: var(--fg);
+}
+
+.detail-provenance {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.detail-row .label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg2);
+}
+
+.detail-row .value {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-row {
+  display: flex;
+  gap: 8px;
+}
+
+.action-row > * {
+  flex: 1;
+}
+
+.compare-list,
+.ranking-list,
+.insight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compare-card,
+.ranking-card,
+.insight-card {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.035);
+}
+
+.compare-card.is-empty {
+  color: var(--fg2);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.compare-top,
+.ranking-top,
+.insight-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.compare-title,
+.ranking-title,
+.insight-title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.compare-sub,
+.ranking-sub,
+.compare-copy,
+.compare-summary,
+.insight-kicker,
+.insight-copy {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--fg2);
+}
+
+.compare-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.metric-tile {
+  padding: 6px 7px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.035);
+}
+
+.metric-tile .label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg2);
+}
+
+.metric-tile .value {
+  font-size: 11px;
+  color: var(--fg);
+}
+
+.mini-button {
+  padding: 4px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent;
+  color: var(--fg2);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.ranking-card {
+  cursor: pointer;
+}
+
+.insight-card {
+  cursor: pointer;
+}
+
+.ranking-card.is-selected {
+  border-color: rgba(231,168,79,0.45);
+  background: rgba(231,168,79,0.08);
+}
+
+.insight-card:hover,
+.ranking-card:hover {
+  border-color: rgba(255,255,255,0.14);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip-button {
+  padding: 5px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  color: var(--fg2);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.chip-button.active {
+  background: var(--accent-soft);
+  border-color: rgba(231,168,79,0.34);
+  color: var(--fg);
+}
+
 canvas#canvas {
   position: fixed;
   top: 0;
@@ -339,6 +656,53 @@ canvas#canvas {
     <button data-view="scatter">Exposure vs Demand</button>
   </div>
 
+  <div class="section section-card">
+    <h3>Explore</h3>
+    <div class="status-note" id="statusNote">Loading site data…</div>
+    <label class="control-label" for="searchInput">Search</label>
+    <input class="control-input" id="searchInput" type="search" placeholder="Search groups, occupations, roles">
+    <div class="control-grid">
+      <div class="section">
+        <label class="control-label" for="exposureFilter">Exposure</label>
+        <select class="control-select" id="exposureFilter">
+          <option value="">All tiers</option>
+          <option value="minimal">Minimal (0-1)</option>
+          <option value="low">Low (2-3)</option>
+          <option value="moderate">Moderate (4-5)</option>
+          <option value="high">High (6-7)</option>
+          <option value="very-high">Very high (8-10)</option>
+        </select>
+      </div>
+      <div class="section">
+        <label class="control-label" for="categoryFilter">Category</label>
+        <select class="control-select" id="categoryFilter">
+          <option value="">All categories</option>
+        </select>
+      </div>
+    </div>
+    <button class="ghost-button" id="clearFilters">Clear filters</button>
+    <div class="results-note" id="resultsNote">Showing all nodes in the current scope.</div>
+  </div>
+
+  <div class="section section-card">
+    <h3>Lens</h3>
+    <div class="control-grid single">
+      <div class="section">
+        <label class="control-label" for="colorMode">Canvas color</label>
+        <select class="control-select" id="colorMode">
+          <option value="exposure">Exposure</option>
+          <option value="confidence">Confidence</option>
+        </select>
+      </div>
+    </div>
+    <div class="chip-row" id="presetRow">
+      <button class="chip-button active" data-preset="overview">Overview</button>
+      <button class="chip-button" data-preset="high-exposure">High exposure</button>
+      <button class="chip-button" data-preset="confidence">Confidence view</button>
+      <button class="chip-button" data-preset="demand">Demand hotspots</button>
+    </div>
+  </div>
+
   <div class="section">
     <h3>Treemap level</h3>
     <div class="nav-row">
@@ -386,6 +750,46 @@ canvas#canvas {
     <div class="stat-label" id="statHighExposureDesc">workers in high-exposure groups (7+)</div>
   </div>
 
+  <div class="section section-card">
+    <h3>Insights</h3>
+    <div class="insight-list" id="insightList"></div>
+  </div>
+
+  <div class="section">
+    <h3>Details</h3>
+    <div class="detail-card" id="detailCard">
+      <div class="detail-kicker" id="detailKicker">Overview</div>
+      <div class="detail-title" id="detailTitle">Loading…</div>
+      <div class="detail-meta" id="detailMeta"></div>
+      <div class="detail-copy" id="detailCopy">Waiting for the site payload.</div>
+      <div class="detail-stats" id="detailStats"></div>
+      <div class="detail-list" id="detailList"></div>
+      <div class="detail-provenance" id="detailProvenance"></div>
+    </div>
+  </div>
+
+  <div class="section section-card">
+    <h3>Compare</h3>
+    <div class="action-row">
+      <button class="ghost-button accent" id="addToCompare">Add selected</button>
+      <button class="ghost-button" id="clearCompare">Clear</button>
+    </div>
+    <div class="compare-list" id="compareList"></div>
+    <div class="compare-summary" id="compareSummary">Pin one or two nodes to compare their workers, pay, demand, exposure, and confidence.</div>
+  </div>
+
+  <div class="section section-card">
+    <h3>Rankings</h3>
+    <label class="control-label" for="rankingMetric">Metric</label>
+    <select class="control-select" id="rankingMetric">
+      <option value="exposure">Highest exposure</option>
+      <option value="workers">Most workers</option>
+      <option value="demand">Highest demand</option>
+      <option value="confidence">Highest confidence</option>
+    </select>
+    <div class="ranking-list" id="rankingList"></div>
+  </div>
+
   <div class="legend">
     <span>Low</span>
     <canvas id="legend" width="80" height="8"></canvas>
@@ -418,6 +822,20 @@ let currentScopeId = null;
 let rects = [];
 let points = [];
 let hovered = null;
+let selectedNodeId = null;
+let searchQuery = "";
+let exposureFilter = "";
+let categoryFilter = "";
+let compareIds = [];
+let rankingMetric = "exposure";
+let colorMode = "exposure";
+
+const searchInput = document.getElementById("searchInput");
+const exposureFilterSelect = document.getElementById("exposureFilter");
+const categoryFilterSelect = document.getElementById("categoryFilter");
+const statusNote = document.getElementById("statusNote");
+const rankingMetricSelect = document.getElementById("rankingMetric");
+const colorModeSelect = document.getElementById("colorMode");
 
 function fmtWorkers(n) {
   if (n == null) return "?";
@@ -454,19 +872,61 @@ function currentScopeNode() {
   return currentScopeId ? nodesById.get(currentScopeId) || null : null;
 }
 
+function selectedNode() {
+  return selectedNodeId ? nodesById.get(selectedNodeId) || null : null;
+}
+
 function childNodes(parentId) {
   return (childrenByParent.get(parentId) || []).slice().sort((a, b) => b.employment_workers - a.employment_workers);
 }
 
+function matchesText(value) {
+  if (!searchQuery) return true;
+  return String(value || "").toLowerCase().includes(searchQuery);
+}
+
+function matchesExposure(score) {
+  if (!exposureFilter) return true;
+  const rounded = Math.round(score || 0);
+  if (exposureFilter === "minimal") return rounded <= 1;
+  if (exposureFilter === "low") return rounded >= 2 && rounded <= 3;
+  if (exposureFilter === "moderate") return rounded >= 4 && rounded <= 5;
+  if (exposureFilter === "high") return rounded >= 6 && rounded <= 7;
+  if (exposureFilter === "very-high") return rounded >= 8;
+  return true;
+}
+
+function matchesBaseFilters(item) {
+  const title = `${item.title || ""} ${item.nco2004_3d || item.canonical_nco2004_3d || ""}`;
+  if (!matchesText(title)) return false;
+  if (categoryFilter && item.category !== categoryFilter) return false;
+  if (!matchesExposure(item.exposure)) return false;
+  return true;
+}
+
+function matchingCanonicalRowsForMajorGroup(node) {
+  const prefix = node.node_id.replace("major-", "");
+  return canonicalRows.filter(row => row.nco2004_3d.startsWith(prefix) && matchesBaseFilters(row));
+}
+
+function matchesNodeFilters(node) {
+  if (!searchQuery && !exposureFilter && !categoryFilter) return true;
+  if (node.node_kind === "major_group") return matchingCanonicalRowsForMajorGroup(node).length > 0;
+  return matchesBaseFilters(node);
+}
+
+function filterRows(rows) {
+  return rows.filter(matchesNodeFilters);
+}
+
 function currentDisplayNodes() {
-  return childNodes(currentScopeId);
+  return filterRows(childNodes(currentScopeId));
 }
 
 function statsRows() {
   const scope = currentScopeNode();
-  if (!scope) return canonicalRows;
-  const rows = childNodes(scope.node_id);
-  return rows.length ? rows : [scope];
+  if (!scope) return canonicalRows.filter(matchesBaseFilters);
+  return currentDisplayNodes();
 }
 
 function pathNodes() {
@@ -504,6 +964,24 @@ function exposureColor(score) {
 function exposureColorCSS(score, alpha) {
   const [r, g, b] = exposureColor(score);
   return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function confidenceColor(score) {
+  const t = Math.max(0, Math.min(1, score || 0));
+  const r = Math.round(92 + t * 143);
+  const g = Math.round(106 + t * 88);
+  const b = Math.round(128 - t * 46);
+  return [r, g, b];
+}
+
+function confidenceColorCSS(score, alpha) {
+  const [r, g, b] = confidenceColor(score);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function nodeColorCSS(node, alpha) {
+  if (colorMode === "confidence") return confidenceColorCSS(node.exposure_confidence || 0, alpha);
+  return exposureColorCSS(node.exposure, alpha);
 }
 
 function squarify(items, x, y, w, h) {
@@ -627,6 +1105,15 @@ function renderHorizontalChart(el, rows) {
   `).join("");
 }
 
+function topNodeBy(rows, metric) {
+  return rows.slice().sort((a, b) => metricValue(b, metric) - metricValue(a, metric))[0] || null;
+}
+
+function setStatus(message, isError) {
+  statusNote.textContent = message;
+  statusNote.classList.toggle("error", Boolean(isError));
+}
+
 function computeStats() {
   const rows = statsRows();
   const totalWorkers = rows.reduce((sum, row) => sum + row.employment_workers, 0);
@@ -682,6 +1169,348 @@ function computeStats() {
   renderHorizontalChart("categoryChart", byCategory.sort((a, b) => b.value - a.value).slice(0, 5));
 }
 
+function renderInsights() {
+  const insightList = document.getElementById("insightList");
+  const visibleNodes = currentDisplayNodes();
+  const rows = visibleNodes.length ? visibleNodes : statsRows();
+  if (!rows.length) {
+    insightList.innerHTML = '<div class="compare-card is-empty">No visible rows in the current scope.</div>';
+    return;
+  }
+
+  const cards = [
+    {
+      kicker: "Largest workforce",
+      node: topNodeBy(rows, "workers"),
+      copy: "Largest worker pool in the visible scope."
+    },
+    {
+      kicker: "Highest exposure",
+      node: topNodeBy(rows, "exposure"),
+      copy: "Most automation-exposed visible node."
+    },
+    {
+      kicker: "Highest demand",
+      node: topNodeBy(rows, "demand"),
+      copy: "Strongest demand signal in the current scope."
+    },
+    {
+      kicker: "Lowest confidence",
+      node: rows.slice().sort((a, b) => (a.exposure_confidence || 0) - (b.exposure_confidence || 0))[0] || null,
+      copy: "Useful place to sanity-check the approximations."
+    },
+  ].filter(card => card.node);
+
+  insightList.innerHTML = cards.map(card => `
+    <div class="insight-card" data-node-id="${card.node.node_id}">
+      <div class="insight-top">
+        <div>
+          <div class="insight-kicker">${card.kicker}</div>
+          <div class="insight-title">${card.node.title}</div>
+          <div class="ranking-sub">${describeNodeLevel(card.node)} · ${metricLabel(card.node, card.kicker === "Largest workforce" ? "workers" : card.kicker === "Highest demand" ? "demand" : card.kicker === "Lowest confidence" ? "confidence" : "exposure")}</div>
+        </div>
+        <button class="mini-button" data-node-id="${card.node.node_id}" data-action="focus">Focus</button>
+      </div>
+      <div class="insight-copy">${card.copy}</div>
+    </div>
+  `).join("");
+}
+
+function activeFilterCount() {
+  return [searchQuery, exposureFilter, categoryFilter].filter(Boolean).length;
+}
+
+function updateResultsUI() {
+  const visibleNodes = currentDisplayNodes();
+  const resultsNote = document.getElementById("resultsNote");
+  if (!activeFilterCount()) {
+    resultsNote.textContent = `Showing ${visibleNodes.length} nodes in the current scope.`;
+    return;
+  }
+  if (!visibleNodes.length) {
+    resultsNote.textContent = "No nodes match the current filters in this scope.";
+    return;
+  }
+  resultsNote.textContent = `Showing ${visibleNodes.length} filtered nodes in the current scope.`;
+}
+
+function canonicalRowForNode(node) {
+  if (!node || !node.canonical_nco2004_3d) return null;
+  return canonicalRows.find(row => row.nco2004_3d === node.canonical_nco2004_3d) || null;
+}
+
+function describeNodeLevel(node) {
+  if (node?.node_kind) return node.node_kind.replace("_", " ");
+  return node?.nco2004_3d ? "canonical row" : "node";
+}
+
+function confidencePct(node) {
+  return `${Math.round((node.exposure_confidence || 0) * 100)}%`;
+}
+
+function renderOverviewDetails() {
+  const detailKicker = document.getElementById("detailKicker");
+  const detailTitle = document.getElementById("detailTitle");
+  const detailMeta = document.getElementById("detailMeta");
+  const detailCopy = document.getElementById("detailCopy");
+  const detailStats = document.getElementById("detailStats");
+  const detailList = document.getElementById("detailList");
+  const detailProvenance = document.getElementById("detailProvenance");
+  const rows = statsRows();
+  const topRow = rows.slice().sort((a, b) => b.exposure - a.exposure)[0] || null;
+  const highestConfidence = rows.slice().sort((a, b) => (b.exposure_confidence || 0) - (a.exposure_confidence || 0))[0] || null;
+
+  detailKicker.textContent = activeFilterCount() ? "Filtered overview" : "Overview";
+  detailTitle.textContent = currentScopeNode() ? currentScopeNode().title : "All India";
+  detailMeta.textContent = currentScopeNode()
+    ? "Current scope summary"
+    : `${payload.meta.canonical_row_count || 0} canonical groups in the payload`;
+  detailCopy.textContent = currentScopeNode()
+    ? "Use hover for quick inspection or click a leaf node to pin details here."
+    : "Use search and filters to narrow the dataset, then drill into a major group or occupation tile.";
+  detailStats.innerHTML = [
+    ["Visible rows", String(rows.length)],
+    ["Top exposure", topRow ? `${topRow.title} (${topRow.exposure.toFixed(1)})` : "No match"],
+    ["Top confidence", highestConfidence ? `${highestConfidence.title} (${confidencePct(highestConfidence)})` : "No match"],
+    ["Avg. confidence", rows.length ? `${Math.round(weightedAverage(rows, "exposure_confidence") * 100)}%` : "0%"],
+  ].map(([label, value]) => `
+    <div class="detail-pill">
+      <span class="label">${label}</span>
+      <span class="value">${value}</span>
+    </div>
+  `).join("");
+  detailList.textContent = activeFilterCount()
+    ? "The current sidebar stats and canvas both reflect the active filters."
+    : payload.meta.approximation_note || "";
+  detailProvenance.innerHTML = `
+    <div class="detail-row">
+      <span class="label">Scope note</span>
+      <span class="value">${currentScopeNode() ? "Rankings and charts below are scoped to the currently visible nodes." : "Root view shows major groups while the sidebar stats aggregate canonical rows."}</span>
+    </div>
+  `;
+}
+
+function renderNodeDetails(node) {
+  const detailKicker = document.getElementById("detailKicker");
+  const detailTitle = document.getElementById("detailTitle");
+  const detailMeta = document.getElementById("detailMeta");
+  const detailCopy = document.getElementById("detailCopy");
+  const detailStats = document.getElementById("detailStats");
+  const detailList = document.getElementById("detailList");
+  const detailProvenance = document.getElementById("detailProvenance");
+  const canonical = canonicalRowForNode(node);
+  const sourceNames = (node.sources || []).map(source => `${source.name} (${source.status})`);
+  const postings = canonical && canonical.sample_postings ? canonical.sample_postings.slice(0, 3) : [];
+  const evidenceSources = canonical?.evidence_sources || [];
+  const provenanceBits = [];
+
+  detailKicker.textContent = hovered && hovered.node_id === node.node_id ? "Hovering" : "Pinned detail";
+  detailTitle.textContent = node.title;
+  detailMeta.textContent = `${describeNodeLevel(node)}${node.canonical_nco2004_3d ? ` · ${node.canonical_nco2004_3d}` : ""}`;
+  detailCopy.textContent = node.summary || canonical?.summary || payload.meta.approximation_note || "";
+  detailStats.innerHTML = [
+    ["Workers", fmtWorkersLong(node.employment_workers)],
+    ["Exposure", `${node.exposure.toFixed(1)}/10`],
+    ["Demand", `${node.demand_index}/100`],
+    ["Pay", `${fmtInr(node.median_monthly_earnings_inr)}/mo`],
+    ["Confidence", confidencePct(node)],
+    ["Approximation", node.approximation_level],
+  ].map(([label, value]) => `
+    <div class="detail-pill">
+      <span class="label">${label}</span>
+      <span class="value">${value}</span>
+    </div>
+  `).join("");
+
+  const detailLines = [];
+  if (node.node_kind === "role" && node.role_share != null) {
+    detailLines.push(`Share of parent group: ${Math.round(node.role_share * 100)}%`);
+  }
+  if (sourceNames.length) {
+    detailLines.push(`Sources: ${sourceNames.join("; ")}`);
+  }
+  if (postings.length) {
+    detailLines.push(`Representative postings: ${postings.join(" | ")}`);
+  }
+  detailList.textContent = detailLines.join(" ");
+
+  if (canonical?.description_source) provenanceBits.push(["Description source", canonical.description_source]);
+  if (canonical?.postings_source) provenanceBits.push(["Postings source", canonical.postings_source]);
+  if (evidenceSources.length) provenanceBits.push(["Evidence", evidenceSources.join("; ")]);
+  if (canonical?.sources?.length) provenanceBits.push(["Canonical sources", canonical.sources.map(source => `${source.name} (${source.status})`).join("; ")]);
+
+  detailProvenance.innerHTML = provenanceBits.map(([label, value]) => `
+    <div class="detail-row">
+      <span class="label">${label}</span>
+      <span class="value">${value}</span>
+    </div>
+  `).join("");
+}
+
+function renderDetails() {
+  const node = hovered || selectedNode() || currentScopeNode();
+  if (!node) {
+    renderOverviewDetails();
+    return;
+  }
+  renderNodeDetails(node);
+}
+
+function metricValue(node, metric) {
+  if (metric === "workers") return node.employment_workers || 0;
+  if (metric === "demand") return node.demand_index || 0;
+  if (metric === "confidence") return node.exposure_confidence || 0;
+  return node.exposure || 0;
+}
+
+function metricLabel(node, metric) {
+  if (metric === "workers") return fmtWorkers(node.employment_workers);
+  if (metric === "demand") return `${node.demand_index}/100 demand`;
+  if (metric === "confidence") return `${confidencePct(node)} confidence`;
+  return `${node.exposure.toFixed(1)}/10 exposure`;
+}
+
+function rankingRows() {
+  return currentDisplayNodes()
+    .slice()
+    .sort((a, b) => metricValue(b, rankingMetric) - metricValue(a, rankingMetric))
+    .slice(0, 5);
+}
+
+function renderRankings() {
+  const rankingList = document.getElementById("rankingList");
+  const rows = rankingRows();
+  if (!rows.length) {
+    rankingList.innerHTML = '<div class="compare-card is-empty">No visible nodes to rank in this scope.</div>';
+    return;
+  }
+  rankingList.innerHTML = rows.map((node, index) => `
+    <div class="ranking-card ${node.node_id === selectedNodeId ? "is-selected" : ""}" data-node-id="${node.node_id}">
+      <div class="ranking-top">
+        <div>
+          <div class="ranking-title">${index + 1}. ${node.title}</div>
+          <div class="ranking-sub">${describeNodeLevel(node)} · ${metricLabel(node, rankingMetric)}</div>
+        </div>
+        <button class="mini-button" data-node-id="${node.node_id}" data-action="focus">Focus</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function addCurrentNodeToCompare() {
+  const node = selectedNode() || hovered || currentScopeNode();
+  if (!node) {
+    setStatus("Select or hover a node before adding it to compare.", true);
+    return;
+  }
+  compareIds = [node.node_id, ...compareIds.filter(id => id !== node.node_id)].slice(0, 2);
+  setStatus(`Added ${node.title} to compare.`, false);
+  renderCompare();
+}
+
+function renderCompare() {
+  const compareList = document.getElementById("compareList");
+  const compareSummary = document.getElementById("compareSummary");
+  const rows = compareIds.map(id => nodesById.get(id)).filter(Boolean);
+
+  if (!rows.length) {
+    compareList.innerHTML = '<div class="compare-card is-empty">Nothing pinned yet. Add the selected node or use a ranking row to focus first.</div>';
+    compareSummary.textContent = "Pin one or two nodes to compare their workers, pay, demand, exposure, and confidence.";
+    return;
+  }
+
+  compareList.innerHTML = rows.map(node => `
+    <div class="compare-card">
+      <div class="compare-top">
+        <div>
+          <div class="compare-title">${node.title}</div>
+          <div class="compare-sub">${describeNodeLevel(node)}${node.canonical_nco2004_3d ? ` · ${node.canonical_nco2004_3d}` : ""}</div>
+        </div>
+        <button class="mini-button" data-compare-remove="${node.node_id}">Remove</button>
+      </div>
+      <div class="compare-metrics">
+        <div class="metric-tile"><span class="label">Workers</span><span class="value">${fmtWorkersLong(node.employment_workers)}</span></div>
+        <div class="metric-tile"><span class="label">Exposure</span><span class="value">${node.exposure.toFixed(1)}/10</span></div>
+        <div class="metric-tile"><span class="label">Demand</span><span class="value">${node.demand_index}/100</span></div>
+        <div class="metric-tile"><span class="label">Confidence</span><span class="value">${confidencePct(node)}</span></div>
+      </div>
+      <div class="compare-copy">${canonicalRowForNode(node)?.summary || node.summary || payload.meta.approximation_note || ""}</div>
+    </div>
+  `).join("");
+
+  if (rows.length < 2) {
+    compareSummary.textContent = "Add one more node to see direct deltas.";
+    return;
+  }
+
+  const [left, right] = rows;
+  const exposureDelta = (left.exposure - right.exposure).toFixed(1);
+  const demandDelta = left.demand_index - right.demand_index;
+  const payDelta = left.median_monthly_earnings_inr - right.median_monthly_earnings_inr;
+  compareSummary.textContent =
+    `${left.title} vs ${right.title}: ${exposureDelta > 0 ? "+" : ""}${exposureDelta} exposure, ` +
+    `${demandDelta > 0 ? "+" : ""}${demandDelta} demand, ` +
+    `${payDelta > 0 ? "+" : ""}${fmtInr(payDelta)} monthly pay difference.`;
+}
+
+function focusNode(nodeId) {
+  if (!nodesById.has(nodeId)) return;
+  selectedNodeId = nodeId;
+  hovered = null;
+  hideTooltip();
+  renderDetails();
+  renderRankings();
+  renderInsights();
+  draw();
+}
+
+function setPreset(preset) {
+  document.querySelectorAll("#presetRow .chip-button").forEach(button => {
+    button.classList.toggle("active", button.dataset.preset === preset);
+  });
+
+  if (preset === "overview") {
+    currentView = "treemap";
+    colorMode = "exposure";
+    rankingMetric = "exposure";
+    exposureFilter = "";
+    exposureFilterSelect.value = "";
+    colorModeSelect.value = "exposure";
+    rankingMetricSelect.value = "exposure";
+    setStatus("Overview preset active.", false);
+  } else if (preset === "high-exposure") {
+    currentView = "treemap";
+    colorMode = "exposure";
+    rankingMetric = "exposure";
+    exposureFilter = "high";
+    exposureFilterSelect.value = "high";
+    colorModeSelect.value = "exposure";
+    rankingMetricSelect.value = "exposure";
+    setStatus("High-exposure preset active.", false);
+  } else if (preset === "confidence") {
+    currentView = "treemap";
+    colorMode = "confidence";
+    rankingMetric = "confidence";
+    exposureFilter = "";
+    exposureFilterSelect.value = "";
+    colorModeSelect.value = "confidence";
+    rankingMetricSelect.value = "confidence";
+    setStatus("Confidence preset active.", false);
+  } else if (preset === "demand") {
+    currentView = "scatter";
+    colorMode = "exposure";
+    rankingMetric = "demand";
+    exposureFilter = "";
+    exposureFilterSelect.value = "";
+    colorModeSelect.value = "exposure";
+    rankingMetricSelect.value = "demand";
+    setStatus("Demand-hotspot preset active.", false);
+  }
+
+  document.querySelectorAll(".toggle button").forEach(node => node.classList.toggle("active", node.dataset.view === currentView));
+  refresh();
+}
+
 function layoutTreemap() {
   const margin = 12;
   const gap = currentScopeNode() ? 2 : 3;
@@ -713,12 +1542,13 @@ function subtitleForNode(node) {
 function drawTreemap() {
   for (const rect of rects) {
     const hoveredNow = rect === hovered;
-    ctx.fillStyle = exposureColorCSS(rect.exposure, hoveredNow ? 1 : 0.9);
+    const selectedNow = rect.node_id === selectedNodeId;
+    ctx.fillStyle = nodeColorCSS(rect, hoveredNow ? 1 : 0.9);
     ctx.fillRect(rect.rx, rect.ry, rect.rw, rect.rh);
 
-    if (hoveredNow) {
-      ctx.strokeStyle = "rgba(255,255,255,0.9)";
-      ctx.lineWidth = 1.5;
+    if (hoveredNow || selectedNow) {
+      ctx.strokeStyle = selectedNow ? "rgba(231,168,79,0.95)" : "rgba(255,255,255,0.9)";
+      ctx.lineWidth = selectedNow ? 2 : 1.5;
       ctx.strokeRect(rect.rx + 0.75, rect.ry + 0.75, rect.rw - 1.5, rect.rh - 1.5);
     }
 
@@ -783,15 +1613,28 @@ function drawScatter() {
 
   for (const point of points) {
     ctx.beginPath();
-    ctx.fillStyle = exposureColorCSS(point.exposure, point === hovered ? 0.95 : 0.7);
+    ctx.fillStyle = nodeColorCSS(point, point === hovered ? 0.95 : 0.7);
     ctx.arc(point.cx, point.cy, point.radius, 0, Math.PI * 2);
     ctx.fill();
-    if (point === hovered) {
-      ctx.strokeStyle = "rgba(255,255,255,0.85)";
-      ctx.lineWidth = 2;
+    if (point === hovered || point.node_id === selectedNodeId) {
+      ctx.strokeStyle = point.node_id === selectedNodeId ? "rgba(231,168,79,0.95)" : "rgba(255,255,255,0.85)";
+      ctx.lineWidth = point.node_id === selectedNodeId ? 2.5 : 2;
       ctx.stroke();
     }
   }
+}
+
+function drawEmptyState(message) {
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  ctx.fillStyle = "rgba(255,255,255,0.86)";
+  ctx.font = "600 18px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(message, w / 2, h / 2 - 8);
+  ctx.fillStyle = "rgba(255,255,255,0.52)";
+  ctx.font = "12px -apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif";
+  ctx.fillText("Adjust the filters or drill back up to broaden the scope.", w / 2, h / 2 + 18);
+  ctx.textAlign = "left";
 }
 
 function draw() {
@@ -809,9 +1652,17 @@ function draw() {
 
   if (currentView === "treemap") {
     layoutTreemap();
+    if (!rects.length) {
+      drawEmptyState("No nodes match the current filters");
+      return;
+    }
     drawTreemap();
   } else {
     layoutScatter();
+    if (!points.length) {
+      drawEmptyState("No nodes match the current filters");
+      return;
+    }
     drawScatter();
   }
 }
@@ -832,7 +1683,7 @@ function sourceText(sources) {
 function showTooltip(node, x, y) {
   tooltip.querySelector(".tt-title").textContent = node.title;
   tooltip.querySelector(".tt-exposure").textContent =
-    `${node.exposure.toFixed(1)}/10 exposure · ${Math.round((node.exposure_confidence || 0) * 100)}% confidence`;
+    `${node.exposure.toFixed(1)}/10 exposure · ${Math.round((node.exposure_confidence || 0) * 100)}% confidence · color by ${colorMode}`;
 
   const rows = [
     ["Level", node.node_kind.replace("_", " ")],
@@ -905,16 +1756,29 @@ function drawLegend() {
   const legend = document.getElementById("legend");
   const gctx = legend.getContext("2d");
   const gradient = gctx.createLinearGradient(0, 0, legend.width, 0);
-  for (let i = 0; i <= 10; i++) {
-    gradient.addColorStop(i / 10, exposureColorCSS(i, 1));
+  if (colorMode === "confidence") {
+    for (let i = 0; i <= 10; i++) gradient.addColorStop(i / 10, confidenceColorCSS(i / 10, 1));
+  } else {
+    for (let i = 0; i <= 10; i++) gradient.addColorStop(i / 10, exposureColorCSS(i, 1));
   }
   gctx.fillStyle = gradient;
   gctx.fillRect(0, 0, legend.width, legend.height);
+  const labels = legend.parentElement.querySelectorAll("span");
+  if (labels.length >= 2) {
+    labels[0].textContent = colorMode === "confidence" ? "Lower confidence" : "Low";
+    labels[1].textContent = colorMode === "confidence" ? "Higher confidence" : "High";
+  }
 }
 
 function refresh() {
   updateScopeUI();
+  updateResultsUI();
   computeStats();
+  renderDetails();
+  renderCompare();
+  renderRankings();
+  renderInsights();
+  drawLegend();
   draw();
 }
 
@@ -924,6 +1788,7 @@ canvas.addEventListener("mousemove", event => {
   const y = event.clientY - rect.top;
   pick(x, y);
   draw();
+  renderDetails();
   if (hovered) showTooltip(hovered, event.clientX, event.clientY);
   else hideTooltip();
 });
@@ -931,12 +1796,14 @@ canvas.addEventListener("mousemove", event => {
 canvas.addEventListener("mouseleave", () => {
   hovered = null;
   hideTooltip();
+  renderDetails();
   draw();
 });
 
 canvas.addEventListener("click", () => {
-  if (!hovered || !hasChildren(hovered)) return;
-  currentScopeId = hovered.node_id;
+  if (!hovered) return;
+  selectedNodeId = hovered.node_id;
+  if (hasChildren(hovered)) currentScopeId = hovered.node_id;
   hovered = null;
   hideTooltip();
   refresh();
@@ -959,6 +1826,7 @@ document.getElementById("drillUp").addEventListener("click", () => {
   currentScopeId = scope && scope.parent_id ? scope.parent_id : null;
   hovered = null;
   hideTooltip();
+  if (selectedNodeId && currentScopeId && !nodesById.has(selectedNodeId)) selectedNodeId = null;
   refresh();
 });
 
@@ -969,9 +1837,89 @@ document.querySelectorAll(".toggle button").forEach(button => {
     button.classList.add("active");
     hovered = null;
     hideTooltip();
-    draw();
+    refresh();
   });
 });
+
+searchInput.addEventListener("input", event => {
+  searchQuery = event.target.value.trim().toLowerCase();
+  selectedNodeId = null;
+  refresh();
+});
+
+exposureFilterSelect.addEventListener("change", event => {
+  exposureFilter = event.target.value;
+  selectedNodeId = null;
+  refresh();
+});
+
+categoryFilterSelect.addEventListener("change", event => {
+  categoryFilter = event.target.value;
+  selectedNodeId = null;
+  refresh();
+});
+
+colorModeSelect.addEventListener("change", event => {
+  colorMode = event.target.value;
+  setStatus(`Canvas color now reflects ${colorMode}.`, false);
+  refresh();
+});
+
+document.getElementById("clearFilters").addEventListener("click", () => {
+  searchQuery = "";
+  exposureFilter = "";
+  categoryFilter = "";
+  searchInput.value = "";
+  exposureFilterSelect.value = "";
+  categoryFilterSelect.value = "";
+  selectedNodeId = null;
+  refresh();
+});
+
+document.getElementById("addToCompare").addEventListener("click", () => {
+  addCurrentNodeToCompare();
+});
+
+document.getElementById("clearCompare").addEventListener("click", () => {
+  compareIds = [];
+  renderCompare();
+});
+
+rankingMetricSelect.addEventListener("change", event => {
+  rankingMetric = event.target.value;
+  refresh();
+});
+
+document.getElementById("compareList").addEventListener("click", event => {
+  const removeButton = event.target.closest("[data-compare-remove]");
+  if (!removeButton) return;
+  compareIds = compareIds.filter(id => id !== removeButton.dataset.compareRemove);
+  renderCompare();
+});
+
+document.getElementById("rankingList").addEventListener("click", event => {
+  const target = event.target.closest("[data-node-id]");
+  if (!target) return;
+  focusNode(target.dataset.nodeId);
+});
+
+document.getElementById("insightList").addEventListener("click", event => {
+  const target = event.target.closest("[data-node-id]");
+  if (!target) return;
+  focusNode(target.dataset.nodeId);
+});
+
+document.getElementById("presetRow").addEventListener("click", event => {
+  const button = event.target.closest("[data-preset]");
+  if (!button) return;
+  setPreset(button.dataset.preset);
+});
+
+function populateCategoryFilter() {
+  const categories = Array.from(new Set(canonicalRows.map(row => row.category).filter(Boolean))).sort();
+  categoryFilterSelect.innerHTML = '<option value="">All categories</option>' +
+    categories.map(category => `<option value="${category}">${prettifyCategory(category)}</option>`).join("");
+}
 
 fetch("data.json")
   .then(response => response.json())
@@ -986,8 +1934,15 @@ fetch("data.json")
       list.push(node);
       childrenByParent.set(node.parent_id, list);
     }
-    drawLegend();
+    populateCategoryFilter();
+    setStatus("Site data loaded. Search and filters apply to the current scope.", false);
     refresh();
+  })
+  .catch(error => {
+    console.error(error);
+    setStatus("Failed to load site data. Check that data.json is present next to the app.", true);
+    document.getElementById("detailTitle").textContent = "Data load failed";
+    document.getElementById("detailCopy").textContent = "The app could not read data.json, so interactive views are unavailable.";
   });
 </script>
 </body>
