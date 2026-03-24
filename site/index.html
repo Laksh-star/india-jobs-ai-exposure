@@ -1473,6 +1473,8 @@ canvas#canvas {
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const tooltip = document.getElementById("tooltip");
+
+// Global UI state for the single-page app.
 let dpr = window.devicePixelRatio || 1;
 let currentView = "treemap";
 let payload = { canonical_rows: [], display_nodes: [], meta: {} };
@@ -1504,6 +1506,11 @@ let analysisIds = [];
 let pendingPointer = null;
 let pointerFrame = 0;
 
+function mapElements(ids) {
+  return Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+}
+
+// Frequently updated controls and card elements are cached once here.
 const searchInput = document.getElementById("searchInput");
 const exposureFilterSelect = document.getElementById("exposureFilter");
 const categoryFilterSelect = document.getElementById("categoryFilter");
@@ -1513,6 +1520,10 @@ const colorModeSelect = document.getElementById("colorMode");
 const tableMetricSelect = document.getElementById("tableMetric");
 const tableDirectionSelect = document.getElementById("tableDirection");
 const saveViewNameInput = document.getElementById("saveViewName");
+const detailEls = mapElements(["detailKicker", "detailTitle", "detailMeta", "detailCopy", "detailStats", "detailList", "detailProvenance"]);
+const methodologyEls = mapElements(["methodologyKicker", "methodologyTitle", "methodologySummary", "methodologyMeta", "methodologyPoints"]);
+const briefingEls = mapElements(["briefingKicker", "briefingTitle", "briefingSummary", "briefingMeta", "briefingPoints"]);
+const reportPackEls = mapElements(["reportPackKicker", "reportPackTitle", "reportPackSummary", "reportPackMeta", "reportPackPoints"]);
 
 function fmtWorkers(n) {
   if (n == null) return "?";
@@ -2374,6 +2385,57 @@ function pct(numerator, denominator) {
   return `${Math.round((numerator / denominator) * 100)}%`;
 }
 
+function renderDetailPills(rows) {
+  return rows.map(([label, value]) => `
+    <div class="detail-pill">
+      <span class="label">${label}</span>
+      <span class="value">${value}</span>
+    </div>
+  `).join("");
+}
+
+function renderDetailRows(rows) {
+  return rows.map(([label, value]) => `
+    <div class="detail-row">
+      <span class="label">${label}</span>
+      <span class="value">${value}</span>
+    </div>
+  `).join("");
+}
+
+function renderChipList(chips, extraClass = "") {
+  const className = extraClass ? `briefing-chip ${extraClass}` : "briefing-chip";
+  return chips.map(chip => `<span class="${className}">${chip}</span>`).join("");
+}
+
+function renderPointList(points) {
+  return points.map(point => `<div class="briefing-point">${point}</div>`).join("");
+}
+
+function renderNarrativeCard(elements, data, chipClass = "") {
+  if (elements.methodologyKicker) {
+    elements.methodologyKicker.textContent = data.kicker;
+    elements.methodologyTitle.textContent = data.title;
+    elements.methodologySummary.textContent = data.summary;
+    elements.methodologyMeta.innerHTML = renderChipList(data.chips, chipClass);
+    elements.methodologyPoints.innerHTML = renderPointList(data.points);
+    return;
+  }
+  if (elements.briefingKicker) {
+    elements.briefingKicker.textContent = data.kicker;
+    elements.briefingTitle.textContent = data.title;
+    elements.briefingSummary.textContent = data.summary;
+    elements.briefingMeta.innerHTML = renderChipList(data.chips, chipClass);
+    elements.briefingPoints.innerHTML = renderPointList(data.bullets);
+    return;
+  }
+  elements.reportPackKicker.textContent = data.kicker;
+  elements.reportPackTitle.textContent = data.title;
+  elements.reportPackSummary.textContent = data.summary;
+  elements.reportPackMeta.innerHTML = renderChipList(data.chips, chipClass);
+  elements.reportPackPoints.innerHTML = renderPointList(data.bullets);
+}
+
 function rankForMetric(node, metric, rows) {
   const ordered = rows.slice().sort((a, b) => metricValue(b, metric) - metricValue(a, metric));
   const index = ordered.findIndex(item => item.node_id === node.node_id);
@@ -2381,91 +2443,56 @@ function rankForMetric(node, metric, rows) {
 }
 
 function renderOverviewDetails() {
-  const detailKicker = document.getElementById("detailKicker");
-  const detailTitle = document.getElementById("detailTitle");
-  const detailMeta = document.getElementById("detailMeta");
-  const detailCopy = document.getElementById("detailCopy");
-  const detailStats = document.getElementById("detailStats");
-  const detailList = document.getElementById("detailList");
-  const detailProvenance = document.getElementById("detailProvenance");
   const rows = statsRows();
   const topRow = rows.slice().sort((a, b) => b.exposure - a.exposure)[0] || null;
   const highestConfidence = rows.slice().sort((a, b) => (b.exposure_confidence || 0) - (a.exposure_confidence || 0))[0] || null;
   const evidence = scopeEvidenceSummary(rows);
+  const avgConfidence = weightedAverage(rows, "exposure_confidence");
 
-  detailKicker.textContent = activeFilterCount() ? "Filtered overview" : "Overview";
-  detailTitle.textContent = currentScopeNode() ? currentScopeNode().title : "All India";
-  detailMeta.textContent = currentScopeNode()
+  detailEls.detailKicker.textContent = activeFilterCount() ? "Filtered overview" : "Overview";
+  detailEls.detailTitle.textContent = currentScopeNode() ? currentScopeNode().title : "All India";
+  detailEls.detailMeta.textContent = currentScopeNode()
     ? "Current scope summary"
     : `${payload.meta.canonical_row_count || 0} canonical groups in the payload`;
-  detailCopy.textContent = currentScopeNode()
+  detailEls.detailCopy.textContent = currentScopeNode()
     ? "Use hover for quick inspection or click a leaf node to pin details here."
     : "Use search and filters to narrow the dataset, then drill into a major group or occupation tile.";
-  detailStats.innerHTML = [
+  detailEls.detailStats.innerHTML = renderDetailPills([
     ["Visible rows", String(rows.length)],
     ["Top exposure", topRow ? `${topRow.title} (${topRow.exposure.toFixed(1)})` : "No match"],
     ["Top confidence", highestConfidence ? `${highestConfidence.title} (${confidencePct(highestConfidence)})` : "No match"],
-    ["Avg. confidence", rows.length ? `${Math.round(weightedAverage(rows, "exposure_confidence") * 100)}%` : "0%"],
-  ].map(([label, value]) => `
-    <div class="detail-pill">
-      <span class="label">${label}</span>
-      <span class="value">${value}</span>
-    </div>
-  `).join("");
-  detailList.textContent = activeFilterCount()
+    ["Avg. confidence", rows.length ? `${Math.round(avgConfidence * 100)}%` : "0%"],
+  ]);
+  detailEls.detailList.textContent = activeFilterCount()
     ? "The current sidebar stats and canvas both reflect the active filters."
     : payload.meta.approximation_note || "";
-  detailProvenance.innerHTML = `
-    <div class="detail-row">
-      <span class="label">Data basis</span>
-      <span class="value">Root treemap tiles are a display layer; canonical NCO 2004 rows remain the labour-market unit underneath.</span>
-    </div>
-    <div class="detail-row">
-      <span class="label">Scope note</span>
-      <span class="value">${currentScopeNode() ? "Rankings and charts below are scoped to the currently visible nodes." : "Root view shows major groups while the sidebar stats aggregate canonical rows."}</span>
-    </div>
-    <div class="detail-row">
-      <span class="label">Evidence footprint</span>
-      <span class="value">${evidence.canonicalCount} canonical rows in scope; ${evidence.sourcedCount} with source metadata; ${evidence.postingsCount} with sample postings.</span>
-    </div>
-    <div class="detail-row">
-      <span class="label">Confidence read</span>
-      <span class="value">${confidenceBand(weightedAverage(rows, "exposure_confidence"))} at ${Math.round(weightedAverage(rows, "exposure_confidence") * 100)}% weighted average.</span>
-    </div>
-  `;
+  detailEls.detailProvenance.innerHTML = renderDetailRows([
+    ["Data basis", "Root treemap tiles are a display layer; canonical NCO 2004 rows remain the labour-market unit underneath."],
+    ["Scope note", currentScopeNode() ? "Rankings and charts below are scoped to the currently visible nodes." : "Root view shows major groups while the sidebar stats aggregate canonical rows."],
+    ["Evidence footprint", `${evidence.canonicalCount} canonical rows in scope; ${evidence.sourcedCount} with source metadata; ${evidence.postingsCount} with sample postings.`],
+    ["Confidence read", `${confidenceBand(avgConfidence)} at ${Math.round(avgConfidence * 100)}% weighted average.`],
+  ]);
 }
 
 function renderNodeDetails(node) {
-  const detailKicker = document.getElementById("detailKicker");
-  const detailTitle = document.getElementById("detailTitle");
-  const detailMeta = document.getElementById("detailMeta");
-  const detailCopy = document.getElementById("detailCopy");
-  const detailStats = document.getElementById("detailStats");
-  const detailList = document.getElementById("detailList");
-  const detailProvenance = document.getElementById("detailProvenance");
   const canonical = canonicalRowForNode(node);
   const sourceNames = (node.sources || []).map(source => `${source.name} (${source.status})`);
   const postings = canonical && canonical.sample_postings ? canonical.sample_postings.slice(0, 3) : [];
   const evidenceSources = canonical?.evidence_sources || [];
   const provenanceBits = [];
 
-  detailKicker.textContent = hovered && hovered.node_id === node.node_id ? "Hovering" : "Pinned detail";
-  detailTitle.textContent = node.title;
-  detailMeta.textContent = `${describeNodeLevel(node)}${node.canonical_nco2004_3d ? ` · ${node.canonical_nco2004_3d}` : ""}`;
-  detailCopy.textContent = node.summary || canonical?.summary || payload.meta.approximation_note || "";
-  detailStats.innerHTML = [
+  detailEls.detailKicker.textContent = hovered && hovered.node_id === node.node_id ? "Hovering" : "Pinned detail";
+  detailEls.detailTitle.textContent = node.title;
+  detailEls.detailMeta.textContent = `${describeNodeLevel(node)}${node.canonical_nco2004_3d ? ` · ${node.canonical_nco2004_3d}` : ""}`;
+  detailEls.detailCopy.textContent = node.summary || canonical?.summary || payload.meta.approximation_note || "";
+  detailEls.detailStats.innerHTML = renderDetailPills([
     ["Workers", fmtWorkersLong(node.employment_workers)],
     ["Exposure", `${node.exposure.toFixed(1)}/10`],
     ["Demand", `${node.demand_index}/100`],
     ["Pay", `${fmtInr(node.median_monthly_earnings_inr)}/mo`],
     ["Confidence", confidencePct(node)],
     ["Approximation", node.approximation_level],
-  ].map(([label, value]) => `
-    <div class="detail-pill">
-      <span class="label">${label}</span>
-      <span class="value">${value}</span>
-    </div>
-  `).join("");
+  ]);
 
   const detailLines = [];
   if (node.node_kind === "role" && node.role_share != null) {
@@ -2477,7 +2504,7 @@ function renderNodeDetails(node) {
   if (postings.length) {
     detailLines.push(`Representative postings: ${postings.join(" | ")}`);
   }
-  detailList.textContent = detailLines.join(" ");
+  detailEls.detailList.textContent = detailLines.join(" ");
 
   if (canonical?.description_source) provenanceBits.push(["Description source", canonical.description_source]);
   if (canonical?.postings_source) provenanceBits.push(["Postings source", canonical.postings_source]);
@@ -2486,12 +2513,7 @@ function renderNodeDetails(node) {
   provenanceBits.unshift(["Data basis", nodeBasisCopy(node)]);
   provenanceBits.push(["Confidence read", `${confidenceBand(node.exposure_confidence || 0)} at ${confidencePct(node)}.`]);
 
-  detailProvenance.innerHTML = provenanceBits.map(([label, value]) => `
-    <div class="detail-row">
-      <span class="label">${label}</span>
-      <span class="value">${value}</span>
-    </div>
-  `).join("");
+  detailEls.detailProvenance.innerHTML = renderDetailRows(provenanceBits);
 }
 
 function renderDetails() {
@@ -2705,16 +2727,7 @@ function methodologyData() {
 }
 
 function renderMethodology() {
-  const data = methodologyData();
-  document.getElementById("methodologyKicker").textContent = data.kicker;
-  document.getElementById("methodologyTitle").textContent = data.title;
-  document.getElementById("methodologySummary").textContent = data.summary;
-  document.getElementById("methodologyMeta").innerHTML = data.chips
-    .map(chip => `<span class="briefing-chip methodology-chip">${chip}</span>`)
-    .join("");
-  document.getElementById("methodologyPoints").innerHTML = data.points
-    .map(point => `<div class="briefing-point">${point}</div>`)
-    .join("");
+  renderNarrativeCard(methodologyEls, methodologyData(), "methodology-chip");
 }
 
 function briefingMarkdown() {
@@ -2744,16 +2757,7 @@ function briefingMarkdown() {
 }
 
 function renderBriefing() {
-  const data = briefingData();
-  document.getElementById("briefingKicker").textContent = data.kicker;
-  document.getElementById("briefingTitle").textContent = data.title;
-  document.getElementById("briefingSummary").textContent = data.summary;
-  document.getElementById("briefingMeta").innerHTML = data.chips
-    .map(chip => `<span class="briefing-chip">${chip}</span>`)
-    .join("");
-  document.getElementById("briefingPoints").innerHTML = data.bullets
-    .map(point => `<div class="briefing-point">${point}</div>`)
-    .join("");
+  renderNarrativeCard(briefingEls, briefingData());
 }
 
 function reportPackData() {
@@ -2878,16 +2882,7 @@ function reportPackMarkdown() {
 }
 
 function renderReportPack() {
-  const report = reportPackData();
-  document.getElementById("reportPackKicker").textContent = report.kicker;
-  document.getElementById("reportPackTitle").textContent = report.title;
-  document.getElementById("reportPackSummary").textContent = report.summary;
-  document.getElementById("reportPackMeta").innerHTML = report.chips
-    .map(chip => `<span class="briefing-chip">${chip}</span>`)
-    .join("");
-  document.getElementById("reportPackPoints").innerHTML = report.bullets
-    .map(point => `<div class="briefing-point">${point}</div>`)
-    .join("");
+  renderNarrativeCard(reportPackEls, reportPackData());
 }
 
 function sortedVisibleNodes(metric = tableMetric, direction = tableDirection) {
