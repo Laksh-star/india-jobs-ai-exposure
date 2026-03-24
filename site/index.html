@@ -471,6 +471,17 @@ a { color: #79a7ff; }
   font-size: 10px;
 }
 
+.methodology-card {
+  background:
+    radial-gradient(circle at top right, rgba(95,217,198,0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+}
+
+.methodology-chip {
+  background: rgba(95,217,198,0.08);
+  border-color: rgba(95,217,198,0.18);
+}
+
 .stat-big {
   font-size: 34px;
   line-height: 1;
@@ -1340,6 +1351,17 @@ canvas#canvas {
       <div class="detail-stats" id="detailStats"></div>
       <div class="detail-list" id="detailList"></div>
       <div class="detail-provenance" id="detailProvenance"></div>
+    </div>
+  </div>
+
+  <div class="section section-card">
+    <h3>Method</h3>
+    <div class="briefing-card methodology-card" id="methodologyCard">
+      <div class="detail-kicker" id="methodologyKicker">Reading guide</div>
+      <div class="briefing-title" id="methodologyTitle">Preparing methodology…</div>
+      <div class="briefing-copy" id="methodologySummary">Waiting for the site payload.</div>
+      <div class="briefing-meta" id="methodologyMeta"></div>
+      <div class="briefing-points" id="methodologyPoints"></div>
     </div>
   </div>
 
@@ -2270,6 +2292,83 @@ function confidencePct(node) {
   return `${Math.round((node.exposure_confidence || 0) * 100)}%`;
 }
 
+function confidenceBand(score) {
+  const value = score || 0;
+  if (value >= 0.8) return "Stronger confidence";
+  if (value >= 0.7) return "Moderate confidence";
+  return "Lower confidence";
+}
+
+function nodeBasisLabel(node) {
+  if (!node) return "Scope aggregate";
+  if (node.node_kind === "role") return "Display-derived role estimate";
+  if (node.node_kind === "major_group") return "Display aggregate";
+  if (node.node_kind === "nco_group" || node.nco2004_3d) return "Canonical labour-market row";
+  return "Display node";
+}
+
+function nodeBasisCopy(node) {
+  if (!node) return "This view is a scoped aggregate over canonical NCO 2004 rows.";
+  if (node.node_kind === "role") {
+    return "Role nodes are interpretive display estimates anchored to a parent canonical NCO group, not direct PLFS-counted occupations.";
+  }
+  if (node.node_kind === "major_group") {
+    return "Major-group tiles are display aggregates built by summing child canonical rows rather than separate labour-market records.";
+  }
+  if (node.node_kind === "nco_group" || node.nco2004_3d) {
+    return "This node maps directly to a canonical NCO 2004 labour-market row in the site payload.";
+  }
+  return "This node is part of the display layer rather than a standalone canonical row.";
+}
+
+function canonicalCodesForNode(node) {
+  if (!node) return [];
+  if (node.node_kind === "major_group") {
+    const prefix = node.node_id.replace("major-", "");
+    return canonicalRows
+      .filter(row => row.nco2004_3d.startsWith(prefix))
+      .map(row => row.nco2004_3d);
+  }
+  if (node.canonical_nco2004_3d) return [node.canonical_nco2004_3d];
+  if (node.nco2004_3d) return [node.nco2004_3d];
+  return [];
+}
+
+function scopeEvidenceSummary(rows) {
+  const codes = Array.from(new Set(rows.map(row => row.canonical_nco2004_3d || row.nco2004_3d).filter(Boolean)));
+  const canonical = codes
+    .map(code => canonicalRows.find(row => row.nco2004_3d === code))
+    .filter(Boolean);
+  const sourced = canonical.filter(row =>
+    (row.sources || []).length ||
+    (row.evidence_sources || []).length ||
+    row.description_source ||
+    row.postings_source
+  );
+  const postings = canonical.filter(row => (row.sample_postings || []).length).length;
+  return {
+    canonicalCount: canonical.length,
+    sourcedCount: sourced.length,
+    postingsCount: postings,
+  };
+}
+
+function nodeEvidenceSummary(node) {
+  const canonical = canonicalRowForNode(node);
+  const sourceCount = (canonical?.sources || node?.sources || []).length;
+  const evidenceCount = (canonical?.evidence_sources || []).length;
+  const postingsCount = (canonical?.sample_postings || []).length;
+  const bits = [];
+  if (sourceCount) bits.push(`${sourceCount} source tag${sourceCount === 1 ? "" : "s"}`);
+  if (evidenceCount) bits.push(`${evidenceCount} evidence note${evidenceCount === 1 ? "" : "s"}`);
+  if (postingsCount) bits.push(`${postingsCount} sample posting${postingsCount === 1 ? "" : "s"}`);
+  if (canonical?.description_source) bits.push(`description from ${canonical.description_source}`);
+  if (canonical?.postings_source) bits.push(`postings from ${canonical.postings_source}`);
+  return bits.length
+    ? bits.join("; ")
+    : "No extra source detail is attached beyond the display payload for this node.";
+}
+
 function pct(numerator, denominator) {
   if (!denominator) return "0%";
   return `${Math.round((numerator / denominator) * 100)}%`;
@@ -2292,6 +2391,7 @@ function renderOverviewDetails() {
   const rows = statsRows();
   const topRow = rows.slice().sort((a, b) => b.exposure - a.exposure)[0] || null;
   const highestConfidence = rows.slice().sort((a, b) => (b.exposure_confidence || 0) - (a.exposure_confidence || 0))[0] || null;
+  const evidence = scopeEvidenceSummary(rows);
 
   detailKicker.textContent = activeFilterCount() ? "Filtered overview" : "Overview";
   detailTitle.textContent = currentScopeNode() ? currentScopeNode().title : "All India";
@@ -2317,8 +2417,20 @@ function renderOverviewDetails() {
     : payload.meta.approximation_note || "";
   detailProvenance.innerHTML = `
     <div class="detail-row">
+      <span class="label">Data basis</span>
+      <span class="value">Root treemap tiles are a display layer; canonical NCO 2004 rows remain the labour-market unit underneath.</span>
+    </div>
+    <div class="detail-row">
       <span class="label">Scope note</span>
       <span class="value">${currentScopeNode() ? "Rankings and charts below are scoped to the currently visible nodes." : "Root view shows major groups while the sidebar stats aggregate canonical rows."}</span>
+    </div>
+    <div class="detail-row">
+      <span class="label">Evidence footprint</span>
+      <span class="value">${evidence.canonicalCount} canonical rows in scope; ${evidence.sourcedCount} with source metadata; ${evidence.postingsCount} with sample postings.</span>
+    </div>
+    <div class="detail-row">
+      <span class="label">Confidence read</span>
+      <span class="value">${confidenceBand(weightedAverage(rows, "exposure_confidence"))} at ${Math.round(weightedAverage(rows, "exposure_confidence") * 100)}% weighted average.</span>
     </div>
   `;
 }
@@ -2371,6 +2483,8 @@ function renderNodeDetails(node) {
   if (canonical?.postings_source) provenanceBits.push(["Postings source", canonical.postings_source]);
   if (evidenceSources.length) provenanceBits.push(["Evidence", evidenceSources.join("; ")]);
   if (canonical?.sources?.length) provenanceBits.push(["Canonical sources", canonical.sources.map(source => `${source.name} (${source.status})`).join("; ")]);
+  provenanceBits.unshift(["Data basis", nodeBasisCopy(node)]);
+  provenanceBits.push(["Confidence read", `${confidenceBand(node.exposure_confidence || 0)} at ${confidencePct(node)}.`]);
 
   detailProvenance.innerHTML = provenanceBits.map(([label, value]) => `
     <div class="detail-row">
@@ -2533,9 +2647,80 @@ function briefingData() {
   };
 }
 
+function methodologyData() {
+  const focus = selectedNode() || currentScopeNode() || null;
+  const rows = statsRows();
+  const weightedConfidence = weightedAverage(rows, "exposure_confidence");
+  const evidence = scopeEvidenceSummary(rows);
+  const viewLabel = currentView === "scatter" ? "scatter comparison" : "treemap";
+
+  if (!focus) {
+    return {
+      kicker: "Reading guide",
+      title: "How to interpret this view",
+      summary: `The root ${viewLabel} is a display map over ${payload.meta.canonical_row_count || canonicalRows.length} canonical NCO 2004 rows. Major-group and role nodes help navigation, but the canonical row remains the labour-market anchor underneath.`,
+      chips: [
+        `${payload.meta.canonical_row_count || canonicalRows.length} canonical rows`,
+        `${payload.meta.display_leaf_count || 0} representative roles`,
+        `${Math.round(weightedConfidence * 100)}% weighted confidence`,
+      ],
+      points: [
+        "Canonical NCO 2004 rows are the stable join layer for employment, pay, demand, exposure, and source reconciliation.",
+        "Major-group tiles aggregate child canonical rows, while role nodes are display-derived estimates intended to make the treemap more legible, not to represent official PLFS microdata counts.",
+        `The current visible scope resolves back to ${evidence.canonicalCount} canonical rows; ${evidence.sourcedCount} of them carry explicit source or evidence metadata and ${evidence.postingsCount} include sample postings.`,
+        `Confidence should be read as ${confidenceBand(weightedConfidence).toLowerCase()} in aggregate, not as a guarantee that every displayed field is equally precise.`,
+      ],
+    };
+  }
+
+  const canonical = canonicalRowForNode(focus);
+  const canonicalCodes = canonicalCodesForNode(focus);
+  const shareLine = focus.node_kind === "role" && focus.role_share != null
+    ? `This role is displayed as an estimated ${Math.round(focus.role_share * 100)}% share of its parent canonical group.`
+    : null;
+  const anchorLine = canonicalCodes.length > 1
+    ? `This node rolls up ${canonicalCodes.length} canonical NCO 2004 rows into a display-level summary.`
+    : canonicalCodes.length === 1
+      ? `Its canonical anchor is NCO 2004 code ${canonicalCodes[0]}.`
+      : "This node is interpreted through the display layer rather than a standalone canonical code.";
+
+  return {
+    kicker: "Methodology note",
+    title: `${focus.title} data basis`,
+    summary: `${nodeBasisLabel(focus)}. ${nodeBasisCopy(focus)}`,
+    chips: [
+      nodeBasisLabel(focus),
+      `${confidencePct(focus)} confidence`,
+      focus.approximation_level || "approximation",
+    ],
+    points: [
+      anchorLine,
+      `Confidence reads as ${confidenceBand(focus.exposure_confidence || 0).toLowerCase()} here, so this node is best interpreted as a directional estimate rather than a precise point forecast.`,
+      canonical
+        ? `Canonical evidence footprint: ${nodeEvidenceSummary(focus)}`
+        : `Display evidence footprint: ${nodeEvidenceSummary(focus)}`,
+      shareLine || `Current scope average confidence is ${Math.round(weightedConfidence * 100)}%, which provides the context for reading this node's ${confidencePct(focus)} score.`,
+    ],
+  };
+}
+
+function renderMethodology() {
+  const data = methodologyData();
+  document.getElementById("methodologyKicker").textContent = data.kicker;
+  document.getElementById("methodologyTitle").textContent = data.title;
+  document.getElementById("methodologySummary").textContent = data.summary;
+  document.getElementById("methodologyMeta").innerHTML = data.chips
+    .map(chip => `<span class="briefing-chip methodology-chip">${chip}</span>`)
+    .join("");
+  document.getElementById("methodologyPoints").innerHTML = data.points
+    .map(point => `<div class="briefing-point">${point}</div>`)
+    .join("");
+}
+
 function briefingMarkdown() {
   writeUrlState();
   const data = briefingData();
+  const method = methodologyData();
   return [
     "# AI Exposure Briefing",
     "",
@@ -2548,6 +2733,11 @@ function briefingMarkdown() {
     "",
     "### Context",
     ...data.chips.map(chip => `- ${chip}`),
+    "",
+    "### Methodology",
+    `- ${method.title}`,
+    `- ${method.summary}`,
+    ...method.points.map(point => `- ${point}`),
     `- Link: ${window.location.href}`,
     ""
   ].join("\n");
@@ -2619,6 +2809,7 @@ function reportPackMarkdown() {
   writeUrlState();
   const report = reportPackData();
   const briefing = briefingData();
+  const method = methodologyData();
   const compareRows = compareIds.map(id => nodesById.get(id)).filter(Boolean);
   const analysis = analysisRows();
   const watchlistRows = watchlistIds.map(id => nodesById.get(id)).filter(Boolean);
@@ -2638,6 +2829,11 @@ function reportPackMarkdown() {
     `- ${briefing.title}`,
     `- ${briefing.summary}`,
     ...briefing.bullets.map(point => `- ${point}`),
+    "",
+    "### Methodology",
+    `- ${method.title}`,
+    `- ${method.summary}`,
+    ...method.points.map(point => `- ${point}`),
   ];
 
   if (analysisMode && analysis.length) {
@@ -3492,7 +3688,9 @@ function showTooltip(node, x, y) {
 
   const rows = [
     ["Level", node.node_kind.replace("_", " ")],
+    ["Basis", nodeBasisLabel(node)],
     ["Approximation", node.approximation_level],
+    ["Confidence band", confidenceBand(node.exposure_confidence || 0)],
     ["Workers", fmtWorkersLong(node.employment_workers)],
     ["Worker share", `${node.worker_share.toFixed(2)}%`],
     ["Pay", `${fmtInr(node.median_monthly_earnings_inr)}/mo`],
@@ -3507,7 +3705,7 @@ function showTooltip(node, x, y) {
     .map(([label, value]) => `<div class="label">${label}</div><div class="value">${value}</div>`)
     .join("");
   tooltip.querySelector(".tt-body").textContent = node.summary || "";
-  tooltip.querySelector(".tt-sources").textContent = sourceText(node.sources);
+  tooltip.querySelector(".tt-sources").textContent = sourceText(node.sources) || nodeEvidenceSummary(node);
   tooltip.classList.add("visible");
   tooltip.style.left = `${Math.min(window.innerWidth - tooltip.offsetWidth - 16, x + 16)}px`;
   tooltip.style.top = `${Math.min(window.innerHeight - tooltip.offsetHeight - 16, y + 16)}px`;
@@ -3580,6 +3778,7 @@ function refresh() {
   updateResultsUI();
   computeStats();
   renderDetails();
+  renderMethodology();
   renderSignals();
   renderWatchlist();
   renderAnalysisSet();
