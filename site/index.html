@@ -441,7 +441,8 @@ a { color: #79a7ff; }
 
 .compare-list,
 .ranking-list,
-.insight-list {
+.insight-list,
+.table-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -449,7 +450,8 @@ a { color: #79a7ff; }
 
 .compare-card,
 .ranking-card,
-.insight-card {
+.insight-card,
+.table-card {
   padding: 10px;
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.08);
@@ -540,8 +542,78 @@ a { color: #79a7ff; }
   background: rgba(231,168,79,0.08);
 }
 
+.table-head,
+.table-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) 0.9fr 0.8fr 0.8fr;
+  gap: 8px;
+  align-items: start;
+}
+
+.table-head {
+  padding: 0 2px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg2);
+}
+
+.table-row {
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  cursor: pointer;
+}
+
+.table-row.is-selected {
+  border-color: rgba(231,168,79,0.45);
+  background: rgba(231,168,79,0.08);
+}
+
+.table-primary {
+  min-width: 0;
+}
+
+.table-primary .title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.table-primary .sub {
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--fg2);
+}
+
+.table-cell {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+.table-cell .label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg2);
+}
+
+.table-meta {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--fg2);
+}
+
 .insight-card:hover,
 .ranking-card:hover {
+  border-color: rgba(255,255,255,0.14);
+}
+
+.table-row:hover {
   border-color: rgba(255,255,255,0.14);
 }
 
@@ -707,6 +779,7 @@ canvas#canvas {
     <h3>Treemap level</h3>
     <div class="nav-row">
       <button class="nav-button" id="drillUp" hidden>Back</button>
+      <button class="nav-button" id="copyLink">Copy Link</button>
       <div class="nav-path" id="navPath">All India · NCO major groups</div>
     </div>
     <div class="scope-note" id="scopeNote">Click a major-group tile to drill into occupations.</div>
@@ -790,6 +863,40 @@ canvas#canvas {
     <div class="ranking-list" id="rankingList"></div>
   </div>
 
+  <div class="section section-card">
+    <h3>Table & Export</h3>
+    <div class="control-grid">
+      <div class="section">
+        <label class="control-label" for="tableMetric">Sort</label>
+        <select class="control-select" id="tableMetric">
+          <option value="workers">Workers</option>
+          <option value="exposure">Exposure</option>
+          <option value="demand">Demand</option>
+          <option value="confidence">Confidence</option>
+        </select>
+      </div>
+      <div class="section">
+        <label class="control-label" for="tableDirection">Direction</label>
+        <select class="control-select" id="tableDirection">
+          <option value="desc">Highest first</option>
+          <option value="asc">Lowest first</option>
+        </select>
+      </div>
+    </div>
+    <div class="action-row">
+      <button class="ghost-button" id="downloadCsv">Download CSV</button>
+      <button class="ghost-button" id="downloadJson">Download JSON</button>
+    </div>
+    <div class="table-meta" id="tableMeta">Export reflects the visible nodes in the current scope.</div>
+    <div class="table-head">
+      <div>Node</div>
+      <div>Workers</div>
+      <div>Exposure</div>
+      <div>Confidence</div>
+    </div>
+    <div class="table-list" id="tableList"></div>
+  </div>
+
   <div class="legend">
     <span>Low</span>
     <canvas id="legend" width="80" height="8"></canvas>
@@ -829,6 +936,8 @@ let categoryFilter = "";
 let compareIds = [];
 let rankingMetric = "exposure";
 let colorMode = "exposure";
+let tableMetric = "workers";
+let tableDirection = "desc";
 
 const searchInput = document.getElementById("searchInput");
 const exposureFilterSelect = document.getElementById("exposureFilter");
@@ -836,6 +945,8 @@ const categoryFilterSelect = document.getElementById("categoryFilter");
 const statusNote = document.getElementById("statusNote");
 const rankingMetricSelect = document.getElementById("rankingMetric");
 const colorModeSelect = document.getElementById("colorMode");
+const tableMetricSelect = document.getElementById("tableMetric");
+const tableDirectionSelect = document.getElementById("tableDirection");
 
 function fmtWorkers(n) {
   if (n == null) return "?";
@@ -1370,6 +1481,15 @@ function metricLabel(node, metric) {
   return `${node.exposure.toFixed(1)}/10 exposure`;
 }
 
+function sortedVisibleNodes(metric = tableMetric, direction = tableDirection) {
+  const rows = currentDisplayNodes().slice();
+  rows.sort((a, b) => {
+    const delta = metricValue(b, metric) - metricValue(a, metric);
+    return direction === "asc" ? -delta : delta;
+  });
+  return rows;
+}
+
 function rankingRows() {
   return currentDisplayNodes()
     .slice()
@@ -1393,6 +1513,32 @@ function renderRankings() {
         </div>
         <button class="mini-button" data-node-id="${node.node_id}" data-action="focus">Focus</button>
       </div>
+    </div>
+  `).join("");
+}
+
+function renderTable() {
+  const tableList = document.getElementById("tableList");
+  const tableMeta = document.getElementById("tableMeta");
+  const rows = sortedVisibleNodes().slice(0, 8);
+  const totalVisible = currentDisplayNodes().length;
+
+  tableMeta.textContent = `Showing ${rows.length} of ${totalVisible} visible nodes. Export includes all visible nodes in the current scope.`;
+
+  if (!rows.length) {
+    tableList.innerHTML = '<div class="compare-card is-empty">No visible nodes to tabulate in this scope.</div>';
+    return;
+  }
+
+  tableList.innerHTML = rows.map(node => `
+    <div class="table-row ${node.node_id === selectedNodeId ? "is-selected" : ""}" data-node-id="${node.node_id}">
+      <div class="table-primary">
+        <div class="title">${node.title}</div>
+        <div class="sub">${describeNodeLevel(node)}${node.canonical_nco2004_3d ? ` · ${node.canonical_nco2004_3d}` : ""}</div>
+      </div>
+      <div class="table-cell">${fmtWorkers(node.employment_workers)}</div>
+      <div class="table-cell">${node.exposure.toFixed(1)}</div>
+      <div class="table-cell">${confidencePct(node)}</div>
     </div>
   `).join("");
 }
@@ -1509,6 +1655,174 @@ function setPreset(preset) {
 
   document.querySelectorAll(".toggle button").forEach(node => node.classList.toggle("active", node.dataset.view === currentView));
   refresh();
+}
+
+function fileSlug(value) {
+  return String(value || "scope")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    || "scope";
+}
+
+function currentScopeLabel() {
+  return currentScopeNode() ? currentScopeNode().title : "all-india";
+}
+
+function exportRows() {
+  return sortedVisibleNodes().map(node => ({
+    node_id: node.node_id,
+    title: node.title,
+    level: describeNodeLevel(node),
+    canonical_nco2004_3d: node.canonical_nco2004_3d || "",
+    category: node.category || "",
+    workers: node.employment_workers,
+    worker_share: node.worker_share,
+    exposure: node.exposure,
+    exposure_confidence: node.exposure_confidence,
+    demand_index: node.demand_index,
+    vacancies_90d: node.vacancies_90d,
+    pay_monthly_inr: node.median_monthly_earnings_inr,
+    approximation_level: node.approximation_level,
+  }));
+}
+
+function downloadText(filename, mime, text) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function currentStateParams() {
+  const params = new URLSearchParams();
+  if (currentView !== "treemap") params.set("view", currentView);
+  if (currentScopeId) params.set("scope", currentScopeId);
+  if (selectedNodeId) params.set("selected", selectedNodeId);
+  if (searchQuery) params.set("search", searchQuery);
+  if (exposureFilter) params.set("exposure", exposureFilter);
+  if (categoryFilter) params.set("category", categoryFilter);
+  if (rankingMetric !== "exposure") params.set("rank", rankingMetric);
+  if (colorMode !== "exposure") params.set("color", colorMode);
+  if (tableMetric !== "workers") params.set("table", tableMetric);
+  if (tableDirection !== "desc") params.set("direction", tableDirection);
+  if (compareIds.length) params.set("compare", compareIds.join(","));
+  return params;
+}
+
+function syncControlsFromState() {
+  searchInput.value = searchQuery;
+  exposureFilterSelect.value = exposureFilter;
+  categoryFilterSelect.value = categoryFilter;
+  rankingMetricSelect.value = rankingMetric;
+  colorModeSelect.value = colorMode;
+  tableMetricSelect.value = tableMetric;
+  tableDirectionSelect.value = tableDirection;
+
+  let activePreset = "overview";
+  if (currentView === "scatter" && rankingMetric === "demand") activePreset = "demand";
+  else if (colorMode === "confidence" && rankingMetric === "confidence") activePreset = "confidence";
+  else if (exposureFilter === "high" && currentView === "treemap") activePreset = "high-exposure";
+
+  document.querySelectorAll("#presetRow .chip-button").forEach(button => {
+    button.classList.toggle("active", button.dataset.preset === activePreset);
+  });
+}
+
+function applyStateFromUrl() {
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  currentView = params.get("view") || "treemap";
+  currentScopeId = params.get("scope") || null;
+  selectedNodeId = params.get("selected") || null;
+  searchQuery = (params.get("search") || "").trim().toLowerCase();
+  exposureFilter = params.get("exposure") || "";
+  categoryFilter = params.get("category") || "";
+  rankingMetric = params.get("rank") || "exposure";
+  colorMode = params.get("color") || "exposure";
+  tableMetric = params.get("table") || "workers";
+  tableDirection = params.get("direction") || "desc";
+  compareIds = (params.get("compare") || "")
+    .split(",")
+    .map(value => value.trim())
+    .filter(Boolean);
+}
+
+function validateStateAgainstPayload() {
+  if (currentScopeId && !nodesById.has(currentScopeId)) currentScopeId = null;
+  if (selectedNodeId && !nodesById.has(selectedNodeId)) selectedNodeId = null;
+  compareIds = compareIds.filter(id => nodesById.has(id)).slice(0, 2);
+}
+
+function writeUrlState() {
+  const params = currentStateParams();
+  const hash = params.toString();
+  const url = hash ? `${window.location.pathname}#${hash}` : window.location.pathname;
+  history.replaceState(null, "", url);
+}
+
+async function copyShareLink() {
+  writeUrlState();
+  const url = window.location.href;
+  try {
+    await navigator.clipboard.writeText(url);
+    setStatus("Copied shareable link for the current site state.", false);
+  } catch (error) {
+    const input = document.createElement("input");
+    input.value = url;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+    setStatus("Copied shareable link for the current site state.", false);
+  }
+}
+
+function downloadCurrentScopeCsv() {
+  const rows = exportRows();
+  if (!rows.length) {
+    setStatus("No visible nodes to export in this scope.", true);
+    return;
+  }
+  const headers = Object.keys(rows[0]);
+  const csv = [
+    headers.join(","),
+    ...rows.map(row => headers.map(key => {
+      const value = row[key] ?? "";
+      const escaped = String(value).replace(/"/g, '""');
+      return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
+    }).join(",")),
+  ].join("\n");
+  downloadText(`${fileSlug(currentScopeLabel())}-visible-nodes.csv`, "text/csv;charset=utf-8", csv);
+  setStatus(`Downloaded ${rows.length} visible nodes as CSV.`, false);
+}
+
+function downloadCurrentScopeJson() {
+  const rows = exportRows();
+  if (!rows.length) {
+    setStatus("No visible nodes to export in this scope.", true);
+    return;
+  }
+  downloadText(
+    `${fileSlug(currentScopeLabel())}-visible-nodes.json`,
+    "application/json;charset=utf-8",
+    JSON.stringify({
+      scope: currentScopeNode() ? currentScopeNode().title : "All India",
+      view: currentView,
+      color_mode: colorMode,
+      filters: {
+        search: searchQuery,
+        exposure: exposureFilter,
+        category: categoryFilter,
+      },
+      rows,
+    }, null, 2),
+  );
+  setStatus(`Downloaded ${rows.length} visible nodes as JSON.`, false);
 }
 
 function layoutTreemap() {
@@ -1778,7 +2092,9 @@ function refresh() {
   renderCompare();
   renderRankings();
   renderInsights();
+  renderTable();
   drawLegend();
+  writeUrlState();
   draw();
 }
 
@@ -1876,6 +2192,10 @@ document.getElementById("clearFilters").addEventListener("click", () => {
   refresh();
 });
 
+document.getElementById("copyLink").addEventListener("click", async () => {
+  await copyShareLink();
+});
+
 document.getElementById("addToCompare").addEventListener("click", () => {
   addCurrentNodeToCompare();
 });
@@ -1909,10 +2229,34 @@ document.getElementById("insightList").addEventListener("click", event => {
   focusNode(target.dataset.nodeId);
 });
 
+document.getElementById("tableList").addEventListener("click", event => {
+  const target = event.target.closest("[data-node-id]");
+  if (!target) return;
+  focusNode(target.dataset.nodeId);
+});
+
 document.getElementById("presetRow").addEventListener("click", event => {
   const button = event.target.closest("[data-preset]");
   if (!button) return;
   setPreset(button.dataset.preset);
+});
+
+tableMetricSelect.addEventListener("change", event => {
+  tableMetric = event.target.value;
+  renderTable();
+});
+
+tableDirectionSelect.addEventListener("change", event => {
+  tableDirection = event.target.value;
+  renderTable();
+});
+
+document.getElementById("downloadCsv").addEventListener("click", () => {
+  downloadCurrentScopeCsv();
+});
+
+document.getElementById("downloadJson").addEventListener("click", () => {
+  downloadCurrentScopeJson();
 });
 
 function populateCategoryFilter() {
@@ -1934,7 +2278,10 @@ fetch("data.json")
       list.push(node);
       childrenByParent.set(node.parent_id, list);
     }
+    applyStateFromUrl();
+    validateStateAgainstPayload();
     populateCategoryFilter();
+    syncControlsFromState();
     setStatus("Site data loaded. Search and filters apply to the current scope.", false);
     refresh();
   })
