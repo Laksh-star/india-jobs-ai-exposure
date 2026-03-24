@@ -336,6 +336,22 @@ a { color: #79a7ff; }
   gap: 6px;
 }
 
+.watchlist-note {
+  width: 100%;
+  min-height: 72px;
+  padding: 8px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: var(--fg);
+  font: inherit;
+  resize: vertical;
+}
+
+.watchlist-note::placeholder {
+  color: rgba(231,234,238,0.34);
+}
+
 .briefing-card {
   display: flex;
   flex-direction: column;
@@ -1049,6 +1065,10 @@ canvas#canvas {
       <button class="ghost-button accent" id="addWatchlist">Add focused</button>
       <button class="ghost-button" id="clearWatchlist">Clear</button>
     </div>
+    <div class="action-row">
+      <button class="ghost-button" id="copyWatchlist">Copy list</button>
+      <button class="ghost-button" id="downloadWatchlist">Download report</button>
+    </div>
     <div class="results-note" id="watchlistMeta">Store a local shortlist of nodes you want to revisit across filters and scopes.</div>
     <div class="watchlist-list" id="watchlistList"></div>
   </div>
@@ -1182,6 +1202,8 @@ let savedViews = [];
 const SAVED_VIEWS_KEY = "india-jobs-ai-exposure-saved-views-v1";
 let watchlistIds = [];
 const WATCHLIST_KEY = "india-jobs-ai-exposure-watchlist-v1";
+let watchlistNotes = {};
+const WATCHLIST_NOTES_KEY = "india-jobs-ai-exposure-watchlist-notes-v1";
 
 const searchInput = document.getElementById("searchInput");
 const exposureFilterSelect = document.getElementById("exposureFilter");
@@ -1648,6 +1670,11 @@ function persistWatchlist() {
   window.localStorage.setItem(WATCHLIST_KEY, JSON.stringify(watchlistIds));
 }
 
+function persistWatchlistNotes() {
+  if (!storageAvailable()) return;
+  window.localStorage.setItem(WATCHLIST_NOTES_KEY, JSON.stringify(watchlistNotes));
+}
+
 function loadWatchlist() {
   if (!storageAvailable()) {
     watchlistIds = [];
@@ -1662,8 +1689,26 @@ function loadWatchlist() {
   }
 }
 
+function loadWatchlistNotes() {
+  if (!storageAvailable()) {
+    watchlistNotes = {};
+    return;
+  }
+  try {
+    const raw = window.localStorage.getItem(WATCHLIST_NOTES_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    watchlistNotes = parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    watchlistNotes = {};
+  }
+}
+
 function validateWatchlist() {
   watchlistIds = watchlistIds.filter(id => nodesById.has(id)).slice(0, 10);
+  const allowed = new Set(watchlistIds);
+  watchlistNotes = Object.fromEntries(
+    Object.entries(watchlistNotes).filter(([id]) => allowed.has(id))
+  );
 }
 
 function ensureNodeVisible(node) {
@@ -1691,6 +1736,60 @@ function addCurrentNodeToWatchlist() {
   persistWatchlist();
   setStatus(`Added ${node.title} to the watchlist.`, false);
   renderWatchlist();
+}
+
+function watchlistMarkdown() {
+  const rows = watchlistIds.map(id => nodesById.get(id)).filter(Boolean);
+  return [
+    "# AI Exposure Watchlist",
+    "",
+    ...rows.flatMap(node => {
+      const note = (watchlistNotes[node.node_id] || "").trim();
+      return [
+        `## ${node.title}`,
+        "",
+        `- Level: ${describeNodeLevel(node)}`,
+        `- Workers: ${fmtWorkersLong(node.employment_workers)}`,
+        `- Exposure: ${node.exposure.toFixed(1)}/10`,
+        `- Demand: ${node.demand_index}/100`,
+        `- Confidence: ${confidencePct(node)}`,
+        `- Current link: ${window.location.origin}${window.location.pathname}#selected=${node.node_id}`,
+        ...(note ? ["- Analyst note:", "", note] : []),
+        "",
+      ];
+    }),
+  ].join("\n");
+}
+
+async function copyWatchlist() {
+  const rows = watchlistIds.map(id => nodesById.get(id)).filter(Boolean);
+  if (!rows.length) {
+    setStatus("Watchlist is empty.", true);
+    return;
+  }
+  const markdown = watchlistMarkdown();
+  try {
+    await navigator.clipboard.writeText(markdown);
+    setStatus("Copied the watchlist report.", false);
+  } catch (error) {
+    const input = document.createElement("textarea");
+    input.value = markdown;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+    setStatus("Copied the watchlist report.", false);
+  }
+}
+
+function downloadWatchlist() {
+  const rows = watchlistIds.map(id => nodesById.get(id)).filter(Boolean);
+  if (!rows.length) {
+    setStatus("Watchlist is empty.", true);
+    return;
+  }
+  downloadText("watchlist-report.md", "text/markdown;charset=utf-8", watchlistMarkdown());
+  setStatus("Downloaded the watchlist report.", false);
 }
 
 function renderWatchlist() {
@@ -1725,6 +1824,7 @@ function renderWatchlist() {
         </div>
       </div>
       <div class="watchlist-copy">${node.summary || canonicalRowForNode(node)?.summary || payload.meta.approximation_note || ""}</div>
+      <textarea class="watchlist-note" data-watch-note="${node.node_id}" placeholder="Add your local note for this node...">${watchlistNotes[node.node_id] || ""}</textarea>
     </div>
   `).join("");
 }
@@ -2922,9 +3022,19 @@ document.getElementById("addWatchlist").addEventListener("click", () => {
 
 document.getElementById("clearWatchlist").addEventListener("click", () => {
   watchlistIds = [];
+  watchlistNotes = {};
   persistWatchlist();
+  persistWatchlistNotes();
   renderWatchlist();
   setStatus("Cleared the watchlist.", false);
+});
+
+document.getElementById("copyWatchlist").addEventListener("click", async () => {
+  await copyWatchlist();
+});
+
+document.getElementById("downloadWatchlist").addEventListener("click", () => {
+  downloadWatchlist();
 });
 
 document.getElementById("copyBriefing").addEventListener("click", async () => {
@@ -3003,9 +3113,18 @@ document.getElementById("watchlistList").addEventListener("click", event => {
   const removeButton = event.target.closest("[data-watch-remove]");
   if (removeButton) {
     watchlistIds = watchlistIds.filter(id => id !== removeButton.dataset.watchRemove);
+    delete watchlistNotes[removeButton.dataset.watchRemove];
     persistWatchlist();
+    persistWatchlistNotes();
     renderWatchlist();
   }
+});
+
+document.getElementById("watchlistList").addEventListener("input", event => {
+  const textarea = event.target.closest("[data-watch-note]");
+  if (!textarea) return;
+  watchlistNotes[textarea.dataset.watchNote] = textarea.value;
+  persistWatchlistNotes();
 });
 
 document.getElementById("tableList").addEventListener("click", event => {
@@ -3070,10 +3189,12 @@ fetch("data.json")
       childrenByParent.set(node.parent_id, list);
     }
     loadWatchlist();
+    loadWatchlistNotes();
     loadSavedViews();
     applyStateFromUrl();
     validateStateAgainstPayload();
     validateWatchlist();
+    persistWatchlistNotes();
     populateCategoryFilter();
     syncControlsFromState();
     setStatus("Site data loaded. Search and filters apply to the current scope.", false);
