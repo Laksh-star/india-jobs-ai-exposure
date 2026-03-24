@@ -295,6 +295,47 @@ a { color: #79a7ff; }
   color: var(--fg2);
 }
 
+.watchlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.watchlist-card {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.watchlist-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.watchlist-title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.watchlist-meta,
+.watchlist-copy {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--fg2);
+}
+
+.watchlist-actions {
+  display: flex;
+  gap: 6px;
+}
+
 .briefing-card {
   display: flex;
   flex-direction: column;
@@ -1002,6 +1043,16 @@ canvas#canvas {
     <div class="signal-list" id="signalList"></div>
   </div>
 
+  <div class="section section-card">
+    <h3>Watchlist</h3>
+    <div class="action-row">
+      <button class="ghost-button accent" id="addWatchlist">Add focused</button>
+      <button class="ghost-button" id="clearWatchlist">Clear</button>
+    </div>
+    <div class="results-note" id="watchlistMeta">Store a local shortlist of nodes you want to revisit across filters and scopes.</div>
+    <div class="watchlist-list" id="watchlistList"></div>
+  </div>
+
   <div class="section">
     <h3>Details</h3>
     <div class="detail-card" id="detailCard">
@@ -1129,6 +1180,8 @@ let tableMetric = "workers";
 let tableDirection = "desc";
 let savedViews = [];
 const SAVED_VIEWS_KEY = "india-jobs-ai-exposure-saved-views-v1";
+let watchlistIds = [];
+const WATCHLIST_KEY = "india-jobs-ai-exposure-watchlist-v1";
 
 const searchInput = document.getElementById("searchInput");
 const exposureFilterSelect = document.getElementById("exposureFilter");
@@ -1582,6 +1635,96 @@ function renderSignals() {
         <button class="mini-button" data-node-id="${card.node.node_id}" data-action="focus">Focus</button>
       </div>
       <div class="signal-copy">${card.copy(card.node)}</div>
+    </div>
+  `).join("");
+}
+
+function watchlistFocusNode() {
+  return selectedNode() || currentScopeNode() || null;
+}
+
+function persistWatchlist() {
+  if (!storageAvailable()) return;
+  window.localStorage.setItem(WATCHLIST_KEY, JSON.stringify(watchlistIds));
+}
+
+function loadWatchlist() {
+  if (!storageAvailable()) {
+    watchlistIds = [];
+    return;
+  }
+  try {
+    const raw = window.localStorage.getItem(WATCHLIST_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    watchlistIds = Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    watchlistIds = [];
+  }
+}
+
+function validateWatchlist() {
+  watchlistIds = watchlistIds.filter(id => nodesById.has(id)).slice(0, 10);
+}
+
+function ensureNodeVisible(node) {
+  if (!node) return;
+  const filteredOut = activeFilterCount() && !matchesNodeFilters(node);
+  if (filteredOut) {
+    searchQuery = "";
+    exposureFilter = "";
+    categoryFilter = "";
+    syncControlsFromState();
+    setStatus(`Cleared filters to bring ${node.title} back into view.`, false);
+  }
+  if (!currentDisplayNodes().some(item => item.node_id === node.node_id)) {
+    currentScopeId = node.parent_id || null;
+  }
+}
+
+function addCurrentNodeToWatchlist() {
+  const node = watchlistFocusNode();
+  if (!node) {
+    setStatus("Select a node or drill into a scope before adding it to the watchlist.", true);
+    return;
+  }
+  watchlistIds = [node.node_id, ...watchlistIds.filter(id => id !== node.node_id)].slice(0, 10);
+  persistWatchlist();
+  setStatus(`Added ${node.title} to the watchlist.`, false);
+  renderWatchlist();
+}
+
+function renderWatchlist() {
+  const watchlistList = document.getElementById("watchlistList");
+  const watchlistMeta = document.getElementById("watchlistMeta");
+  const rows = watchlistIds.map(id => nodesById.get(id)).filter(Boolean);
+
+  if (!storageAvailable()) {
+    watchlistMeta.textContent = "Local storage is unavailable in this browser, so the watchlist is disabled.";
+    watchlistList.innerHTML = '<div class="compare-card is-empty">Watchlist is unavailable in this browser session.</div>';
+    return;
+  }
+
+  if (!rows.length) {
+    watchlistMeta.textContent = "Store a local shortlist of nodes you want to revisit across filters and scopes.";
+    watchlistList.innerHTML = '<div class="compare-card is-empty">Nothing saved yet. Add the focused node or current drilled scope.</div>';
+    return;
+  }
+
+  watchlistMeta.textContent = `${rows.length} watchlist nodes saved in this browser.`;
+  watchlistList.innerHTML = rows.map(node => `
+    <div class="watchlist-card">
+      <div class="watchlist-top">
+        <div>
+          <div class="watchlist-title">${node.title}</div>
+          <div class="watchlist-meta">${describeNodeLevel(node)} · ${metricLabel(node, "workers")} · ${metricLabel(node, "exposure")}</div>
+        </div>
+        <div class="watchlist-actions">
+          <button class="mini-button" data-watch-focus="${node.node_id}">Focus</button>
+          <button class="mini-button" data-watch-compare="${node.node_id}">Compare</button>
+          <button class="mini-button" data-watch-remove="${node.node_id}">Remove</button>
+        </div>
+      </div>
+      <div class="watchlist-copy">${node.summary || canonicalRowForNode(node)?.summary || payload.meta.approximation_note || ""}</div>
     </div>
   `).join("");
 }
@@ -2653,6 +2796,7 @@ function refresh() {
   computeStats();
   renderDetails();
   renderSignals();
+  renderWatchlist();
   renderBriefing();
   renderCompare();
   renderRankings();
@@ -2772,6 +2916,17 @@ document.getElementById("copyLink").addEventListener("click", async () => {
   await copyShareLink();
 });
 
+document.getElementById("addWatchlist").addEventListener("click", () => {
+  addCurrentNodeToWatchlist();
+});
+
+document.getElementById("clearWatchlist").addEventListener("click", () => {
+  watchlistIds = [];
+  persistWatchlist();
+  renderWatchlist();
+  setStatus("Cleared the watchlist.", false);
+});
+
 document.getElementById("copyBriefing").addEventListener("click", async () => {
   await copyBriefing();
 });
@@ -2821,6 +2976,36 @@ document.getElementById("signalList").addEventListener("click", event => {
   const target = event.target.closest("[data-node-id]");
   if (!target) return;
   focusNode(target.dataset.nodeId);
+});
+
+document.getElementById("watchlistList").addEventListener("click", event => {
+  const focusButton = event.target.closest("[data-watch-focus]");
+  if (focusButton) {
+    const node = nodesById.get(focusButton.dataset.watchFocus);
+    if (!node) return;
+    ensureNodeVisible(node);
+    focusNode(node.node_id);
+    return;
+  }
+
+  const compareButton = event.target.closest("[data-watch-compare]");
+  if (compareButton) {
+    const node = nodesById.get(compareButton.dataset.watchCompare);
+    if (!node) return;
+    ensureNodeVisible(node);
+    compareIds = [node.node_id, ...compareIds.filter(id => id !== node.node_id)].slice(0, 2);
+    selectedNodeId = node.node_id;
+    setStatus(`Added ${node.title} to compare from the watchlist.`, false);
+    refresh();
+    return;
+  }
+
+  const removeButton = event.target.closest("[data-watch-remove]");
+  if (removeButton) {
+    watchlistIds = watchlistIds.filter(id => id !== removeButton.dataset.watchRemove);
+    persistWatchlist();
+    renderWatchlist();
+  }
 });
 
 document.getElementById("tableList").addEventListener("click", event => {
@@ -2884,9 +3069,11 @@ fetch("data.json")
       list.push(node);
       childrenByParent.set(node.parent_id, list);
     }
+    loadWatchlist();
     loadSavedViews();
     applyStateFromUrl();
     validateStateAgainstPayload();
+    validateWatchlist();
     populateCategoryFilter();
     syncControlsFromState();
     setStatus("Site data loaded. Search and filters apply to the current scope.", false);
