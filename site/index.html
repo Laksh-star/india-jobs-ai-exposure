@@ -245,6 +245,56 @@ a { color: #79a7ff; }
   gap: 6px;
 }
 
+.signal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.signal-card {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(121,167,255,0.07), rgba(255,255,255,0.02));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.signal-card:hover {
+  border-color: rgba(255,255,255,0.14);
+}
+
+.signal-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.signal-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8ab3ff;
+}
+
+.signal-title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.signal-copy,
+.signal-meta {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--fg2);
+}
+
 .briefing-card {
   display: flex;
   flex-direction: column;
@@ -550,7 +600,8 @@ a { color: #79a7ff; }
 .compare-list,
 .ranking-list,
 .insight-list,
-.table-list {
+.table-list,
+.signal-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -944,6 +995,11 @@ canvas#canvas {
   <div class="section section-card">
     <h3>Insights</h3>
     <div class="insight-list" id="insightList"></div>
+  </div>
+
+  <div class="section section-card">
+    <h3>Signal Board</h3>
+    <div class="signal-list" id="signalList"></div>
   </div>
 
   <div class="section">
@@ -1463,6 +1519,73 @@ function renderInsights() {
   `).join("");
 }
 
+function signalCandidateRows() {
+  const visibleNodes = currentDisplayNodes();
+  return visibleNodes.length ? visibleNodes : statsRows();
+}
+
+function payVulnerabilityScore(node) {
+  const pay = Math.max(node.median_monthly_earnings_inr || 0, 1);
+  const payFactor = Math.max(0, 30000 - pay) / 30000;
+  return (node.exposure || 0) * (1 + payFactor) * Math.sqrt(Math.max(node.employment_workers || 0, 1));
+}
+
+function signalCards() {
+  const rows = signalCandidateRows();
+  if (!rows.length) return [];
+
+  const pick = scorer => rows.slice().sort((a, b) => scorer(b) - scorer(a))[0] || null;
+  return [
+    {
+      kicker: "Risk concentration",
+      node: pick(node => (node.employment_workers || 0) * (node.exposure || 0)),
+      metric: node => `${fmtWorkers(node.employment_workers)} workers · ${node.exposure.toFixed(1)}/10 exposure`,
+      copy: node => `${node.title} combines large workforce scale with elevated exposure in the current view.`
+    },
+    {
+      kicker: "Transformation hotspot",
+      node: pick(node => (node.demand_index || 0) * (node.exposure || 0)),
+      metric: node => `${node.demand_index}/100 demand · ${node.exposure.toFixed(1)}/10 exposure`,
+      copy: node => `${node.title} pairs strong demand with strong exposure, making it a likely transition hotspot.`
+    },
+    {
+      kicker: "Research gap",
+      node: pick(node => (node.employment_workers || 0) * (1 - (node.exposure_confidence || 0))),
+      metric: node => `${confidencePct(node)} confidence · ${fmtWorkers(node.employment_workers)} workers`,
+      copy: node => `${node.title} affects a large worker pool but still carries weaker confidence than nearby nodes.`
+    },
+    {
+      kicker: "Low-pay vulnerability",
+      node: pick(node => payVulnerabilityScore(node)),
+      metric: node => `${fmtInr(node.median_monthly_earnings_inr)}/mo · ${node.exposure.toFixed(1)}/10 exposure`,
+      copy: node => `${node.title} combines lower pay with elevated exposure, which may warrant closer attention.`
+    },
+  ].filter(card => card.node);
+}
+
+function renderSignals() {
+  const signalList = document.getElementById("signalList");
+  const cards = signalCards();
+  if (!cards.length) {
+    signalList.innerHTML = '<div class="compare-card is-empty">No signal candidates are visible in the current scope.</div>';
+    return;
+  }
+
+  signalList.innerHTML = cards.map(card => `
+    <div class="signal-card" data-node-id="${card.node.node_id}">
+      <div class="signal-top">
+        <div>
+          <div class="signal-kicker">${card.kicker}</div>
+          <div class="signal-title">${card.node.title}</div>
+          <div class="signal-meta">${describeNodeLevel(card.node)} · ${card.metric(card.node)}</div>
+        </div>
+        <button class="mini-button" data-node-id="${card.node.node_id}" data-action="focus">Focus</button>
+      </div>
+      <div class="signal-copy">${card.copy(card.node)}</div>
+    </div>
+  `).join("");
+}
+
 function activeFilterCount() {
   return [searchQuery, exposureFilter, categoryFilter].filter(Boolean).length;
 }
@@ -1657,6 +1780,7 @@ function briefingData() {
   const topExposure = topNodeBy(rows, "exposure");
   const topDemand = topNodeBy(rows, "demand");
   const lowConfidence = rows.slice().sort((a, b) => (a.exposure_confidence || 0) - (b.exposure_confidence || 0))[0] || null;
+  const topSignal = signalCards()[0] || null;
   const compareRows = compareIds.map(id => nodesById.get(id)).filter(Boolean);
   const chips = [
     scopeDescriptionText(),
@@ -1678,6 +1802,7 @@ function briefingData() {
         ? `Average confidence is ${Math.round(weightedConfidence * 100)}%, and ${lowConfidence.title} is the weakest-confidence visible node at ${confidencePct(lowConfidence)}.`
         : `Average confidence is ${Math.round(weightedConfidence * 100)}% in the current view.`,
     ];
+    if (topSignal) bullets.push(`${topSignal.kicker}: ${topSignal.copy(topSignal.node)}`);
     return {
       kicker: activeFilterCount() ? "Filtered scope brief" : "Root scope brief",
       title: currentScopeNode() ? `${currentScopeNode().title} snapshot` : "All India snapshot",
@@ -2527,6 +2652,7 @@ function refresh() {
   updateResultsUI();
   computeStats();
   renderDetails();
+  renderSignals();
   renderBriefing();
   renderCompare();
   renderRankings();
@@ -2686,6 +2812,12 @@ document.getElementById("rankingList").addEventListener("click", event => {
 });
 
 document.getElementById("insightList").addEventListener("click", event => {
+  const target = event.target.closest("[data-node-id]");
+  if (!target) return;
+  focusNode(target.dataset.nodeId);
+});
+
+document.getElementById("signalList").addEventListener("click", event => {
   const target = event.target.closest("[data-node-id]");
   if (!target) return;
   focusNode(target.dataset.nodeId);
