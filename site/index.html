@@ -245,6 +245,60 @@ a { color: #79a7ff; }
   gap: 6px;
 }
 
+.briefing-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    radial-gradient(circle at top left, rgba(121,167,255,0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+}
+
+.briefing-title {
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.briefing-copy,
+.briefing-points,
+.briefing-meta {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--fg2);
+}
+
+.briefing-points {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.briefing-point {
+  padding: 8px 9px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.briefing-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.briefing-chip {
+  padding: 5px 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--fg);
+  font-size: 10px;
+}
+
 .stat-big {
   font-size: 34px;
   line-height: 1;
@@ -906,6 +960,21 @@ canvas#canvas {
   </div>
 
   <div class="section section-card">
+    <h3>Briefing</h3>
+    <div class="briefing-card" id="briefingCard">
+      <div class="detail-kicker" id="briefingKicker">Auto-generated brief</div>
+      <div class="briefing-title" id="briefingTitle">Preparing briefing…</div>
+      <div class="briefing-copy" id="briefingSummary">Waiting for the site payload.</div>
+      <div class="briefing-meta" id="briefingMeta"></div>
+      <div class="briefing-points" id="briefingPoints"></div>
+      <div class="action-row">
+        <button class="ghost-button accent" id="copyBriefing">Copy brief</button>
+        <button class="ghost-button" id="downloadBriefing">Download note</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section section-card">
     <h3>Compare</h3>
     <div class="action-row">
       <button class="ghost-button accent" id="addToCompare">Add selected</button>
@@ -1426,6 +1495,17 @@ function confidencePct(node) {
   return `${Math.round((node.exposure_confidence || 0) * 100)}%`;
 }
 
+function pct(numerator, denominator) {
+  if (!denominator) return "0%";
+  return `${Math.round((numerator / denominator) * 100)}%`;
+}
+
+function rankForMetric(node, metric, rows) {
+  const ordered = rows.slice().sort((a, b) => metricValue(b, metric) - metricValue(a, metric));
+  const index = ordered.findIndex(item => item.node_id === node.node_id);
+  return index >= 0 ? index + 1 : null;
+}
+
 function renderOverviewDetails() {
   const detailKicker = document.getElementById("detailKicker");
   const detailTitle = document.getElementById("detailTitle");
@@ -1534,6 +1614,10 @@ function renderDetails() {
   renderNodeDetails(node);
 }
 
+function briefingContextNode() {
+  return selectedNode() || currentScopeNode() || null;
+}
+
 function metricValue(node, metric) {
   if (metric === "workers") return node.employment_workers || 0;
   if (metric === "demand") return node.demand_index || 0;
@@ -1546,6 +1630,122 @@ function metricLabel(node, metric) {
   if (metric === "demand") return `${node.demand_index}/100 demand`;
   if (metric === "confidence") return `${confidencePct(node)} confidence`;
   return `${node.exposure.toFixed(1)}/10 exposure`;
+}
+
+function scopeDescriptionText() {
+  const scope = currentScopeNode();
+  if (!scope) return "All India";
+  return `All India / ${pathNodes().map(node => node.title).join(" / ")}`;
+}
+
+function activeFilterSummary() {
+  const bits = [];
+  if (searchQuery) bits.push(`search=${searchQuery}`);
+  if (exposureFilter) bits.push(`exposure=${exposureFilter}`);
+  if (categoryFilter) bits.push(`category=${categoryFilter}`);
+  return bits.length ? bits.join(", ") : "none";
+}
+
+function briefingData() {
+  const focus = briefingContextNode();
+  const rows = statsRows();
+  const visibleNodes = currentDisplayNodes();
+  const totalWorkers = rows.reduce((sum, row) => sum + (row.employment_workers || 0), 0);
+  const weightedExposure = weightedAverage(rows, "exposure");
+  const weightedConfidence = weightedAverage(rows, "exposure_confidence");
+  const highExposureWorkers = rows.filter(row => row.exposure >= 7).reduce((sum, row) => sum + (row.employment_workers || 0), 0);
+  const topExposure = topNodeBy(rows, "exposure");
+  const topDemand = topNodeBy(rows, "demand");
+  const lowConfidence = rows.slice().sort((a, b) => (a.exposure_confidence || 0) - (b.exposure_confidence || 0))[0] || null;
+  const compareRows = compareIds.map(id => nodesById.get(id)).filter(Boolean);
+  const chips = [
+    scopeDescriptionText(),
+    currentView === "scatter" ? "Scatter view" : "Treemap view",
+    colorMode === "confidence" ? "Confidence colors" : "Exposure colors",
+    `Filters: ${activeFilterSummary()}`
+  ];
+
+  if (!focus) {
+    const summary = `This view covers ${rows.length} visible records representing ${fmtWorkersLong(totalWorkers)} workers with an employment-weighted AI exposure of ${weightedExposure.toFixed(1)}/10.`;
+    const bullets = [
+      highExposureWorkers
+        ? `${fmtWorkers(highExposureWorkers)} workers, or ${pct(highExposureWorkers, totalWorkers)}, sit in nodes rated 7+ for exposure in the current view.`
+        : "No workers are currently visible in 7+ exposure nodes.",
+      topExposure && topDemand
+        ? `${topExposure.title} is the most exposed visible node at ${topExposure.exposure.toFixed(1)}/10, while ${topDemand.title} carries the strongest demand signal at ${topDemand.demand_index}/100.`
+        : "No top-node comparisons are available for the current view.",
+      lowConfidence
+        ? `Average confidence is ${Math.round(weightedConfidence * 100)}%, and ${lowConfidence.title} is the weakest-confidence visible node at ${confidencePct(lowConfidence)}.`
+        : `Average confidence is ${Math.round(weightedConfidence * 100)}% in the current view.`,
+    ];
+    return {
+      kicker: activeFilterCount() ? "Filtered scope brief" : "Root scope brief",
+      title: currentScopeNode() ? `${currentScopeNode().title} snapshot` : "All India snapshot",
+      summary,
+      bullets,
+      chips,
+    };
+  }
+
+  const siblingRows = currentDisplayNodes();
+  const exposureRank = rankForMetric(focus, "exposure", siblingRows);
+  const workersRank = rankForMetric(focus, "workers", siblingRows);
+  const confidenceRank = rankForMetric(focus, "confidence", siblingRows);
+  const scopeAvgExposure = weightedAverage(rows, "exposure");
+  const compareLine = compareRows.length === 2
+    ? `${compareRows[0].title} vs ${compareRows[1].title} is pinned separately in Compare.`
+    : null;
+  const summary = `${focus.title} is currently the active focus within ${scopeDescriptionText()}, representing ${fmtWorkersLong(focus.employment_workers)} workers with ${focus.exposure.toFixed(1)}/10 exposure, ${focus.demand_index}/100 demand, and ${confidencePct(focus)} confidence.`;
+  const bullets = [
+    exposureRank && workersRank
+      ? `Within the ${siblingRows.length} visible peer nodes, it ranks #${exposureRank} by exposure and #${workersRank} by worker count.`
+      : "Peer ranking is unavailable in the current filtered view.",
+    `${focus.title} sits ${focus.exposure >= scopeAvgExposure ? "above" : "below"} the current scope's weighted exposure average of ${scopeAvgExposure.toFixed(1)}/10, with pay at ${fmtInr(focus.median_monthly_earnings_inr)}/month.`,
+    confidenceRank
+      ? `Confidence ranks #${confidenceRank} among visible peers, and the node is marked as a ${focus.approximation_level} approximation${focus.node_kind === "role" && focus.role_share != null ? ` with an estimated ${Math.round(focus.role_share * 100)}% share of its parent group` : ""}.`
+      : `This node is marked as a ${focus.approximation_level} approximation.`,
+  ];
+  if (compareLine) bullets.push(compareLine);
+  return {
+    kicker: "Focused node brief",
+    title: `${focus.title} briefing`,
+    summary,
+    bullets,
+    chips,
+  };
+}
+
+function briefingMarkdown() {
+  writeUrlState();
+  const data = briefingData();
+  return [
+    "# AI Exposure Briefing",
+    "",
+    `## ${data.title}`,
+    "",
+    data.summary,
+    "",
+    "### Key Points",
+    ...data.bullets.map(point => `- ${point}`),
+    "",
+    "### Context",
+    ...data.chips.map(chip => `- ${chip}`),
+    `- Link: ${window.location.href}`,
+    ""
+  ].join("\n");
+}
+
+function renderBriefing() {
+  const data = briefingData();
+  document.getElementById("briefingKicker").textContent = data.kicker;
+  document.getElementById("briefingTitle").textContent = data.title;
+  document.getElementById("briefingSummary").textContent = data.summary;
+  document.getElementById("briefingMeta").innerHTML = data.chips
+    .map(chip => `<span class="briefing-chip">${chip}</span>`)
+    .join("");
+  document.getElementById("briefingPoints").innerHTML = data.bullets
+    .map(point => `<div class="briefing-point">${point}</div>`)
+    .join("");
 }
 
 function sortedVisibleNodes(metric = tableMetric, direction = tableDirection) {
@@ -2040,6 +2240,29 @@ function downloadCurrentScopeJson() {
   setStatus(`Downloaded ${rows.length} visible nodes as JSON.`, false);
 }
 
+async function copyBriefing() {
+  const markdown = briefingMarkdown();
+  try {
+    await navigator.clipboard.writeText(markdown);
+    setStatus("Copied the current briefing note.", false);
+  } catch (error) {
+    const input = document.createElement("textarea");
+    input.value = markdown;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+    setStatus("Copied the current briefing note.", false);
+  }
+}
+
+function downloadBriefing() {
+  const title = briefingData().title;
+  const subject = briefingContextNode()?.title || currentScopeLabel();
+  downloadText(`${fileSlug(subject)}-briefing.md`, "text/markdown;charset=utf-8", briefingMarkdown());
+  setStatus(`Downloaded briefing note for ${title}.`, false);
+}
+
 function layoutTreemap() {
   const margin = 12;
   const gap = currentScopeNode() ? 2 : 3;
@@ -2304,6 +2527,7 @@ function refresh() {
   updateResultsUI();
   computeStats();
   renderDetails();
+  renderBriefing();
   renderCompare();
   renderRankings();
   renderInsights();
@@ -2420,6 +2644,14 @@ document.getElementById("clearFilters").addEventListener("click", () => {
 
 document.getElementById("copyLink").addEventListener("click", async () => {
   await copyShareLink();
+});
+
+document.getElementById("copyBriefing").addEventListener("click", async () => {
+  await copyBriefing();
+});
+
+document.getElementById("downloadBriefing").addEventListener("click", () => {
+  downloadBriefing();
 });
 
 document.getElementById("saveCurrentView").addEventListener("click", () => {
