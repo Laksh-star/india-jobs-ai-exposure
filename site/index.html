@@ -191,6 +191,60 @@ a { color: #79a7ff; }
   line-height: 1.45;
 }
 
+.saved-view-form {
+  display: flex;
+  gap: 8px;
+}
+
+.saved-view-form .control-input {
+  flex: 1;
+}
+
+.saved-view-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saved-view-card {
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saved-view-card.is-active {
+  border-color: rgba(231,168,79,0.32);
+  background: rgba(231,168,79,0.08);
+}
+
+.saved-view-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.saved-view-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.saved-view-meta {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--fg2);
+}
+
+.saved-view-actions {
+  display: flex;
+  gap: 6px;
+}
+
 .stat-big {
   font-size: 34px;
   line-height: 1;
@@ -775,6 +829,16 @@ canvas#canvas {
     </div>
   </div>
 
+  <div class="section section-card">
+    <h3>Saved Views</h3>
+    <div class="saved-view-form">
+      <input class="control-input" id="saveViewName" type="text" maxlength="48" placeholder="Name this analysis state">
+      <button class="ghost-button accent" id="saveCurrentView">Save</button>
+    </div>
+    <div class="results-note" id="savedViewMeta">Save the current scope, filters, lens, and compare state for quick return visits on this browser.</div>
+    <div class="saved-view-list" id="savedViewList"></div>
+  </div>
+
   <div class="section">
     <h3>Treemap level</h3>
     <div class="nav-row">
@@ -938,6 +1002,8 @@ let rankingMetric = "exposure";
 let colorMode = "exposure";
 let tableMetric = "workers";
 let tableDirection = "desc";
+let savedViews = [];
+const SAVED_VIEWS_KEY = "india-jobs-ai-exposure-saved-views-v1";
 
 const searchInput = document.getElementById("searchInput");
 const exposureFilterSelect = document.getElementById("exposureFilter");
@@ -947,6 +1013,7 @@ const rankingMetricSelect = document.getElementById("rankingMetric");
 const colorModeSelect = document.getElementById("colorMode");
 const tableMetricSelect = document.getElementById("tableMetric");
 const tableDirectionSelect = document.getElementById("tableDirection");
+const saveViewNameInput = document.getElementById("saveViewName");
 
 function fmtWorkers(n) {
   if (n == null) return "?";
@@ -1551,7 +1618,7 @@ function addCurrentNodeToCompare() {
   }
   compareIds = [node.node_id, ...compareIds.filter(id => id !== node.node_id)].slice(0, 2);
   setStatus(`Added ${node.title} to compare.`, false);
-  renderCompare();
+  refresh();
 }
 
 function renderCompare() {
@@ -1604,10 +1671,7 @@ function focusNode(nodeId) {
   selectedNodeId = nodeId;
   hovered = null;
   hideTooltip();
-  renderDetails();
-  renderRankings();
-  renderInsights();
-  draw();
+  refresh();
 }
 
 function setPreset(preset) {
@@ -1669,6 +1733,115 @@ function currentScopeLabel() {
   return currentScopeNode() ? currentScopeNode().title : "all-india";
 }
 
+function stateSignature() {
+  return currentStateParams().toString();
+}
+
+function storageAvailable() {
+  try {
+    const testKey = "__india_jobs_ai_exposure_test__";
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function defaultSavedViewName() {
+  const scope = currentScopeNode() ? currentScopeNode().title : "All India";
+  if (searchQuery) return `${scope} · ${searchQuery}`;
+  if (exposureFilter) return `${scope} · ${exposureFilter}`;
+  if (currentView === "scatter") return `${scope} · scatter`;
+  return scope;
+}
+
+function savedViewSummary(view) {
+  const bits = [];
+  bits.push(view.scope_label || "All India");
+  bits.push(view.view === "scatter" ? "Scatter" : "Treemap");
+  if (view.search) bits.push(`Search: ${view.search}`);
+  if (view.exposure) bits.push(`Exposure: ${view.exposure}`);
+  if (view.category) bits.push(`Category: ${prettifyCategory(view.category)}`);
+  if (view.color === "confidence") bits.push("Confidence colors");
+  if ((view.compare || "").length) bits.push("Compare pinned");
+  return bits.join(" · ");
+}
+
+function persistSavedViews() {
+  if (!storageAvailable()) return;
+  window.localStorage.setItem(SAVED_VIEWS_KEY, JSON.stringify(savedViews));
+}
+
+function loadSavedViews() {
+  if (!storageAvailable()) {
+    document.getElementById("savedViewMeta").textContent = "Local storage is unavailable in this browser, so saved views are disabled.";
+    savedViews = [];
+    return;
+  }
+  try {
+    const raw = window.localStorage.getItem(SAVED_VIEWS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    savedViews = Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    savedViews = [];
+  }
+}
+
+function renderSavedViews() {
+  const savedViewList = document.getElementById("savedViewList");
+  const savedViewMeta = document.getElementById("savedViewMeta");
+  const signature = stateSignature();
+
+  if (!storageAvailable()) {
+    savedViewList.innerHTML = '<div class="compare-card is-empty">Saved views are unavailable in this browser session.</div>';
+    return;
+  }
+
+  if (!savedViews.length) {
+    savedViewMeta.textContent = "Save the current scope, filters, lens, and compare state for quick return visits on this browser.";
+    savedViewList.innerHTML = '<div class="compare-card is-empty">No saved views yet. Save the current state to build an analysis shortlist.</div>';
+    return;
+  }
+
+  const activeView = savedViews.find(view => (view.hash || "") === signature) || null;
+  savedViewMeta.textContent = activeView
+    ? `Active saved view: ${activeView.name}`
+    : `${savedViews.length} saved views on this browser.`;
+
+  savedViewList.innerHTML = savedViews.map(view => `
+    <div class="saved-view-card ${(view.hash || "") === signature ? "is-active" : ""}">
+      <div class="saved-view-top">
+        <div>
+          <div class="saved-view-name">${view.name}</div>
+          <div class="saved-view-meta">${savedViewSummary(view)}</div>
+        </div>
+        <div class="saved-view-actions">
+          <button class="mini-button" data-saved-restore="${view.id}">Restore</button>
+          <button class="mini-button" data-saved-remove="${view.id}">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function applyStateFromParams(params) {
+  currentView = params.get("view") || "treemap";
+  currentScopeId = params.get("scope") || null;
+  selectedNodeId = params.get("selected") || null;
+  searchQuery = (params.get("search") || "").trim().toLowerCase();
+  exposureFilter = params.get("exposure") || "";
+  categoryFilter = params.get("category") || "";
+  rankingMetric = params.get("rank") || "exposure";
+  colorMode = params.get("color") || "exposure";
+  tableMetric = params.get("table") || "workers";
+  tableDirection = params.get("direction") || "desc";
+  compareIds = (params.get("compare") || "")
+    .split(",")
+    .map(value => value.trim())
+    .filter(Boolean);
+}
+
 function exportRows() {
   return sortedVisibleNodes().map(node => ({
     node_id: node.node_id,
@@ -1723,6 +1896,9 @@ function syncControlsFromState() {
   colorModeSelect.value = colorMode;
   tableMetricSelect.value = tableMetric;
   tableDirectionSelect.value = tableDirection;
+  document.querySelectorAll(".toggle button").forEach(button => {
+    button.classList.toggle("active", button.dataset.view === currentView);
+  });
 
   let activePreset = "overview";
   if (currentView === "scatter" && rankingMetric === "demand") activePreset = "demand";
@@ -1736,20 +1912,7 @@ function syncControlsFromState() {
 
 function applyStateFromUrl() {
   const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  currentView = params.get("view") || "treemap";
-  currentScopeId = params.get("scope") || null;
-  selectedNodeId = params.get("selected") || null;
-  searchQuery = (params.get("search") || "").trim().toLowerCase();
-  exposureFilter = params.get("exposure") || "";
-  categoryFilter = params.get("category") || "";
-  rankingMetric = params.get("rank") || "exposure";
-  colorMode = params.get("color") || "exposure";
-  tableMetric = params.get("table") || "workers";
-  tableDirection = params.get("direction") || "desc";
-  compareIds = (params.get("compare") || "")
-    .split(",")
-    .map(value => value.trim())
-    .filter(Boolean);
+  applyStateFromParams(params);
 }
 
 function validateStateAgainstPayload() {
@@ -1763,6 +1926,58 @@ function writeUrlState() {
   const hash = params.toString();
   const url = hash ? `${window.location.pathname}#${hash}` : window.location.pathname;
   history.replaceState(null, "", url);
+}
+
+function saveCurrentView() {
+  if (!storageAvailable()) {
+    setStatus("Saved views require local storage in this browser.", true);
+    return;
+  }
+
+  const name = (saveViewNameInput.value || "").trim() || defaultSavedViewName();
+  const hash = stateSignature();
+  const now = new Date().toISOString();
+  const newView = {
+    id: `${Date.now()}`,
+    name,
+    hash,
+    scope_label: currentScopeNode() ? currentScopeNode().title : "All India",
+    view: currentView,
+    search: searchQuery,
+    exposure: exposureFilter,
+    category: categoryFilter,
+    color: colorMode,
+    compare: compareIds.join(","),
+    saved_at: now,
+  };
+
+  const existingIndex = savedViews.findIndex(view => view.name.toLowerCase() === name.toLowerCase());
+  if (existingIndex >= 0) savedViews.splice(existingIndex, 1);
+  savedViews.unshift(newView);
+  savedViews = savedViews.slice(0, 8);
+  persistSavedViews();
+  saveViewNameInput.value = "";
+  setStatus(`Saved view "${name}".`, false);
+  renderSavedViews();
+}
+
+function restoreSavedView(viewId) {
+  const savedView = savedViews.find(view => view.id === viewId);
+  if (!savedView) return;
+  const params = new URLSearchParams(savedView.hash || "");
+  applyStateFromParams(params);
+  validateStateAgainstPayload();
+  syncControlsFromState();
+  setStatus(`Restored saved view "${savedView.name}".`, false);
+  refresh();
+}
+
+function deleteSavedView(viewId) {
+  const savedView = savedViews.find(view => view.id === viewId);
+  savedViews = savedViews.filter(view => view.id !== viewId);
+  persistSavedViews();
+  renderSavedViews();
+  if (savedView) setStatus(`Deleted saved view "${savedView.name}".`, false);
 }
 
 async function copyShareLink() {
@@ -2093,6 +2308,7 @@ function refresh() {
   renderRankings();
   renderInsights();
   renderTable();
+  renderSavedViews();
   drawLegend();
   writeUrlState();
   draw();
@@ -2135,6 +2351,16 @@ window.addEventListener("keydown", event => {
     hideTooltip();
     refresh();
   }
+});
+
+window.addEventListener("hashchange", () => {
+  if (!displayNodes.length) return;
+  applyStateFromUrl();
+  validateStateAgainstPayload();
+  syncControlsFromState();
+  hovered = null;
+  hideTooltip();
+  refresh();
 });
 
 document.getElementById("drillUp").addEventListener("click", () => {
@@ -2196,13 +2422,17 @@ document.getElementById("copyLink").addEventListener("click", async () => {
   await copyShareLink();
 });
 
+document.getElementById("saveCurrentView").addEventListener("click", () => {
+  saveCurrentView();
+});
+
 document.getElementById("addToCompare").addEventListener("click", () => {
   addCurrentNodeToCompare();
 });
 
 document.getElementById("clearCompare").addEventListener("click", () => {
   compareIds = [];
-  renderCompare();
+  refresh();
 });
 
 rankingMetricSelect.addEventListener("change", event => {
@@ -2214,7 +2444,7 @@ document.getElementById("compareList").addEventListener("click", event => {
   const removeButton = event.target.closest("[data-compare-remove]");
   if (!removeButton) return;
   compareIds = compareIds.filter(id => id !== removeButton.dataset.compareRemove);
-  renderCompare();
+  refresh();
 });
 
 document.getElementById("rankingList").addEventListener("click", event => {
@@ -2243,12 +2473,12 @@ document.getElementById("presetRow").addEventListener("click", event => {
 
 tableMetricSelect.addEventListener("change", event => {
   tableMetric = event.target.value;
-  renderTable();
+  refresh();
 });
 
 tableDirectionSelect.addEventListener("change", event => {
   tableDirection = event.target.value;
-  renderTable();
+  refresh();
 });
 
 document.getElementById("downloadCsv").addEventListener("click", () => {
@@ -2257,6 +2487,18 @@ document.getElementById("downloadCsv").addEventListener("click", () => {
 
 document.getElementById("downloadJson").addEventListener("click", () => {
   downloadCurrentScopeJson();
+});
+
+document.getElementById("savedViewList").addEventListener("click", event => {
+  const restoreButton = event.target.closest("[data-saved-restore]");
+  if (restoreButton) {
+    restoreSavedView(restoreButton.dataset.savedRestore);
+    return;
+  }
+  const removeButton = event.target.closest("[data-saved-remove]");
+  if (removeButton) {
+    deleteSavedView(removeButton.dataset.savedRemove);
+  }
 });
 
 function populateCategoryFilter() {
@@ -2278,6 +2520,7 @@ fetch("data.json")
       list.push(node);
       childrenByParent.set(node.parent_id, list);
     }
+    loadSavedViews();
     applyStateFromUrl();
     validateStateAgainstPayload();
     populateCategoryFilter();

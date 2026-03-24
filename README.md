@@ -10,7 +10,7 @@ This repository is an adaptation, not a forked continuation of the upstream proj
 
 The repo now ships with a transparent **seed dataset** so the site is runnable without PLFS microdata or live NCS scraping. The production path is still the same 5-stage idea: build taxonomy, ingest labour stats, ingest demand, generate packets, score AI exposure, and ship a static treemap. The public UI now adds a denser display hierarchy of representative role nodes while keeping `nco2004_3d` as the canonical labour-market unit underneath.
 
-The current site build also includes scope-aware search, exposure/category filters, visual lenses for exposure vs confidence, clickable insight cards, a persistent details panel, pinned comparison slots, scoped ranking tables, sortable visible-node tables, one-click CSV/JSON export for the current scope, shareable deep links that restore the active view state, and clearer confidence/provenance readouts so the static payload is easier to inspect without leaving the treemap view.
+The current site build also includes scope-aware search, exposure/category filters, visual lenses for exposure vs confidence, browser-local saved views, clickable insight cards, a persistent details panel, pinned comparison slots, scoped ranking tables, sortable visible-node tables, one-click CSV/JSON export for the current scope, shareable deep links that restore the active view state, and clearer confidence/provenance readouts so the static payload is easier to inspect without leaving the treemap view.
 
 ![India treemap](jobs.png)
 
