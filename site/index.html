@@ -352,6 +352,71 @@ a { color: #79a7ff; }
   color: rgba(231,234,238,0.34);
 }
 
+.analysis-set-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.analysis-set-card {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    radial-gradient(circle at top left, rgba(231,168,79,0.12), transparent 34%),
+    rgba(255,255,255,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.analysis-set-card.is-selected {
+  border-color: rgba(231,168,79,0.42);
+}
+
+.analysis-set-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.analysis-set-title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.analysis-set-meta,
+.analysis-set-copy {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--fg2);
+}
+
+.analysis-set-copy {
+  white-space: pre-wrap;
+}
+
+.analysis-set-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.analysis-set-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(231,168,79,0.12);
+  border: 1px solid rgba(231,168,79,0.22);
+  color: #f5d08a;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .briefing-card {
   display: flex;
   flex-direction: column;
@@ -721,6 +786,11 @@ a { color: #79a7ff; }
   background: rgba(255,255,255,0.035);
 }
 
+.metric-tile.is-leading {
+  border: 1px solid rgba(231,168,79,0.26);
+  background: rgba(231,168,79,0.09);
+}
+
 .metric-tile .label {
   display: block;
   margin-bottom: 2px;
@@ -733,6 +803,89 @@ a { color: #79a7ff; }
 .metric-tile .value {
   font-size: 11px;
   color: var(--fg);
+}
+
+.compare-delta-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.compare-delta-card {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compare-delta-kicker {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8ab3ff;
+  font-weight: 700;
+}
+
+.compare-delta-lead {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.compare-delta-copy {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--fg2);
+}
+
+.compare-delta-bars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.compare-delta-track {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.compare-delta-node {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--fg2);
+}
+
+.compare-delta-node .title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compare-delta-bar {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.compare-delta-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.compare-delta-fill.left {
+  background: linear-gradient(90deg, rgba(121,167,255,0.35), rgba(121,167,255,0.9));
+}
+
+.compare-delta-fill.right {
+  background: linear-gradient(90deg, rgba(231,168,79,0.35), rgba(231,168,79,0.92));
 }
 
 .mini-button {
@@ -911,6 +1064,7 @@ canvas#canvas {
 }
 
 @media (max-width: 900px) {
+  :root { --sidebar-w: 100%; }
   body { overflow: auto; height: auto; }
   #sidebar {
     position: relative;
@@ -923,6 +1077,94 @@ canvas#canvas {
     left: 0;
     width: 100%;
     min-height: 68vh;
+  }
+}
+
+@media (max-width: 1200px) {
+  :root { --sidebar-w: 300px; }
+}
+
+@media (max-width: 700px) {
+  #sidebar {
+    padding: 14px 12px 16px;
+    gap: 14px;
+  }
+
+  .nav-row,
+  .saved-view-form,
+  .saved-view-top,
+  .signal-top,
+  .watchlist-top,
+  .analysis-set-top,
+  .compare-top,
+  .ranking-top,
+  .insight-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-row,
+  .watchlist-actions,
+  .analysis-set-actions,
+  .saved-view-actions {
+    flex-wrap: wrap;
+  }
+
+  .action-row > * {
+    flex: initial;
+    min-width: calc(50% - 4px);
+  }
+
+  .control-grid,
+  .detail-stats,
+  .compare-metrics,
+  .compare-delta-bars {
+    grid-template-columns: 1fr;
+  }
+
+  .compare-delta-node,
+  .table-cell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .table-head {
+    display: none;
+  }
+
+  .table-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 10px;
+  }
+
+  .table-primary {
+    grid-column: 1 / -1;
+  }
+
+  .table-cell .label {
+    display: block;
+  }
+
+  .hbar-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .hbar-label {
+    width: 100%;
+    text-align: left;
+  }
+
+  .hbar-track {
+    width: calc(100% - 40px);
+  }
+
+  .hbar-val {
+    width: 34px;
+  }
+
+  #tooltip {
+    max-width: min(320px, calc(100vw - 24px));
   }
 }
 </style>
@@ -1073,6 +1315,21 @@ canvas#canvas {
     <div class="watchlist-list" id="watchlistList"></div>
   </div>
 
+  <div class="section section-card">
+    <h3>Analysis Set</h3>
+    <div class="action-row">
+      <button class="ghost-button accent" id="analysisFromFocus">Use focused</button>
+      <button class="ghost-button" id="analysisFromCompare">Use compare</button>
+      <button class="ghost-button" id="analysisFromWatchlist">Use watchlist</button>
+    </div>
+    <div class="action-row">
+      <button class="ghost-button" id="addFocusedToAnalysis">Add focused</button>
+      <button class="ghost-button" id="clearAnalysis">Clear</button>
+    </div>
+    <div class="results-note" id="analysisMeta">Build a working set from the focus, compare tray, or watchlist to generate a combined brief.</div>
+    <div class="analysis-set-list" id="analysisSetList"></div>
+  </div>
+
   <div class="section">
     <h3>Details</h3>
     <div class="detail-card" id="detailCard">
@@ -1102,12 +1359,28 @@ canvas#canvas {
   </div>
 
   <div class="section section-card">
+    <h3>Report Pack</h3>
+    <div class="briefing-card" id="reportPackCard">
+      <div class="detail-kicker" id="reportPackKicker">Analyst export</div>
+      <div class="briefing-title" id="reportPackTitle">Preparing report…</div>
+      <div class="briefing-copy" id="reportPackSummary">Waiting for the site payload.</div>
+      <div class="briefing-meta" id="reportPackMeta"></div>
+      <div class="briefing-points" id="reportPackPoints"></div>
+      <div class="action-row">
+        <button class="ghost-button accent" id="copyReportPack">Copy report</button>
+        <button class="ghost-button" id="downloadReportPack">Download report</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section section-card">
     <h3>Compare</h3>
     <div class="action-row">
       <button class="ghost-button accent" id="addToCompare">Add selected</button>
       <button class="ghost-button" id="clearCompare">Clear</button>
     </div>
     <div class="compare-list" id="compareList"></div>
+    <div class="compare-delta-grid" id="compareDeltaGrid"></div>
     <div class="compare-summary" id="compareSummary">Pin one or two nodes to compare their workers, pay, demand, exposure, and confidence.</div>
   </div>
 
@@ -1204,6 +1477,10 @@ let watchlistIds = [];
 const WATCHLIST_KEY = "india-jobs-ai-exposure-watchlist-v1";
 let watchlistNotes = {};
 const WATCHLIST_NOTES_KEY = "india-jobs-ai-exposure-watchlist-notes-v1";
+let analysisMode = "";
+let analysisIds = [];
+let pendingPointer = null;
+let pointerFrame = 0;
 
 const searchInput = document.getElementById("searchInput");
 const exposureFilterSelect = document.getElementById("exposureFilter");
@@ -1735,7 +2012,7 @@ function addCurrentNodeToWatchlist() {
   watchlistIds = [node.node_id, ...watchlistIds.filter(id => id !== node.node_id)].slice(0, 10);
   persistWatchlist();
   setStatus(`Added ${node.title} to the watchlist.`, false);
-  renderWatchlist();
+  refresh();
 }
 
 function watchlistMarkdown() {
@@ -1827,6 +2104,138 @@ function renderWatchlist() {
       <textarea class="watchlist-note" data-watch-note="${node.node_id}" placeholder="Add your local note for this node...">${watchlistNotes[node.node_id] || ""}</textarea>
     </div>
   `).join("");
+}
+
+function analysisModeLabel(mode = analysisMode) {
+  if (mode === "focus") return "Focused node";
+  if (mode === "compare") return "Compare tray";
+  if (mode === "watchlist") return "Watchlist";
+  if (mode === "manual") return "Manual set";
+  return "Analysis set";
+}
+
+function analysisModeSourceText(mode = analysisMode) {
+  if (mode === "focus") return "the focused node";
+  if (mode === "compare") return "the compare tray";
+  if (mode === "watchlist") return "the watchlist";
+  if (mode === "manual") return "the manual set";
+  return "the analysis set";
+}
+
+function analysisRows() {
+  if (analysisMode === "focus") {
+    const node = briefingContextNode();
+    return node ? [node] : [];
+  }
+  const ids = analysisMode === "compare"
+    ? compareIds
+    : analysisMode === "watchlist"
+      ? watchlistIds
+      : analysisMode === "manual"
+        ? analysisIds
+        : [];
+  return Array.from(new Set(ids))
+    .map(id => nodesById.get(id))
+    .filter(Boolean)
+    .slice(0, 10);
+}
+
+function validateAnalysisSet() {
+  analysisIds = Array.from(new Set(analysisIds.filter(id => nodesById.has(id)))).slice(0, 10);
+  if (analysisMode === "manual" && !analysisIds.length) analysisMode = "";
+}
+
+function setAnalysisMode(mode) {
+  let rows = [];
+  if (mode === "focus") {
+    const node = briefingContextNode();
+    if (!node) {
+      setStatus("Select a node or drill into a scope before using focused analysis.", true);
+      return;
+    }
+    rows = [node];
+  } else if (mode === "compare") {
+    rows = compareIds.map(id => nodesById.get(id)).filter(Boolean);
+    if (!rows.length) {
+      setStatus("Pin at least one node in Compare before using compare analysis.", true);
+      return;
+    }
+  } else if (mode === "watchlist") {
+    rows = watchlistIds.map(id => nodesById.get(id)).filter(Boolean);
+    if (!rows.length) {
+      setStatus("Add at least one node to the watchlist before using watchlist analysis.", true);
+      return;
+    }
+  } else {
+    return;
+  }
+
+  analysisMode = mode;
+  if (mode !== "manual") analysisIds = [];
+  setStatus(`${analysisModeLabel(mode)} now drives the combined briefing.`, false);
+  refresh();
+}
+
+function addFocusedToAnalysisSet() {
+  const node = selectedNode() || currentScopeNode() || hovered || null;
+  if (!node) {
+    setStatus("Select, hover, or drill into a node before adding it to the analysis set.", true);
+    return;
+  }
+  const baseIds = analysisRows().map(item => item.node_id);
+  analysisIds = [node.node_id, ...baseIds.filter(id => id !== node.node_id)].slice(0, 10);
+  analysisMode = "manual";
+  setStatus(`Added ${node.title} to the manual analysis set.`, false);
+  refresh();
+}
+
+function clearAnalysisSet() {
+  analysisMode = "";
+  analysisIds = [];
+  setStatus("Cleared the analysis set.", false);
+  refresh();
+}
+
+function renderAnalysisSet() {
+  const analysisMeta = document.getElementById("analysisMeta");
+  const analysisSetList = document.getElementById("analysisSetList");
+  const rows = analysisRows();
+
+  if (!analysisMode) {
+    analysisMeta.textContent = "Build a working set from the focus, compare tray, or watchlist to generate a combined brief.";
+    analysisSetList.innerHTML = '<div class="compare-card is-empty">Nothing active yet. Use the focused node, compare tray, or watchlist as a working set.</div>';
+    return;
+  }
+
+  if (!rows.length) {
+    analysisMeta.textContent = `${analysisModeLabel()} is active, but there are no nodes available in that source right now.`;
+    analysisSetList.innerHTML = '<div class="compare-card is-empty">This analysis source is currently empty.</div>';
+    return;
+  }
+
+  analysisMeta.textContent = analysisMode === "manual"
+    ? `Manual working set with ${rows.length} node${rows.length === 1 ? "" : "s"}. Use focused, compare, or watchlist to rebuild it from another source.`
+    : `${analysisModeLabel()} is driving the briefing with ${rows.length} node${rows.length === 1 ? "" : "s"}. Add focused nodes to turn it into a manual working set.`;
+  analysisSetList.innerHTML = rows.map(node => {
+    const note = (watchlistNotes[node.node_id] || "").trim();
+    const copy = note ? `Analyst note: ${note}` : (node.summary || canonicalRowForNode(node)?.summary || payload.meta.approximation_note || "");
+    return `
+      <div class="analysis-set-card ${node.node_id === selectedNodeId ? "is-selected" : ""}">
+        <div class="analysis-set-top">
+          <div>
+            <div class="analysis-set-chip">${analysisModeLabel()}</div>
+            <div class="analysis-set-title">${node.title}</div>
+            <div class="analysis-set-meta">${describeNodeLevel(node)} · ${metricLabel(node, "workers")} · ${metricLabel(node, "exposure")}</div>
+          </div>
+          <div class="analysis-set-actions">
+            <button class="mini-button" data-analysis-focus="${node.node_id}">Focus</button>
+            ${analysisMode === "manual" ? `<button class="mini-button" data-analysis-remove="${node.node_id}">Remove</button>` : ""}
+          </div>
+        </div>
+        <div class="analysis-set-copy">${copy}</div>
+      </div>
+    `;
+  }).join("");
 }
 
 function activeFilterCount() {
@@ -2015,7 +2424,7 @@ function activeFilterSummary() {
 function briefingData() {
   const focus = briefingContextNode();
   const rows = statsRows();
-  const visibleNodes = currentDisplayNodes();
+  const analysis = analysisRows();
   const totalWorkers = rows.reduce((sum, row) => sum + (row.employment_workers || 0), 0);
   const weightedExposure = weightedAverage(rows, "exposure");
   const weightedConfidence = weightedAverage(rows, "exposure_confidence");
@@ -2031,6 +2440,47 @@ function briefingData() {
     colorMode === "confidence" ? "Confidence colors" : "Exposure colors",
     `Filters: ${activeFilterSummary()}`
   ];
+
+  if (analysisMode && analysisMode !== "focus" && analysis.length) {
+    const analysisWorkers = analysis.reduce((sum, row) => sum + (row.employment_workers || 0), 0);
+    const analysisExposure = weightedAverage(analysis, "exposure");
+    const analysisConfidence = weightedAverage(analysis, "exposure_confidence");
+    const largest = topNodeBy(analysis, "workers");
+    const topExposureNode = topNodeBy(analysis, "exposure");
+    const topDemandNode = topNodeBy(analysis, "demand");
+    const lowestConfidenceNode = analysis.slice().sort((a, b) => (a.exposure_confidence || 0) - (b.exposure_confidence || 0))[0] || null;
+    const categories = new Set(analysis.map(node => node.category).filter(Boolean));
+    const notedRows = analysis.filter(node => (watchlistNotes[node.node_id] || "").trim());
+    const analysisChips = [
+      ...chips,
+      `${analysisModeLabel()} source`,
+      `${analysis.length} node${analysis.length === 1 ? "" : "s"}`
+    ];
+    const summary = `This analysis set pulls ${analysis.length} node${analysis.length === 1 ? "" : "s"} from ${analysisModeSourceText()}, representing ${fmtWorkersLong(analysisWorkers)} workers with an employment-weighted AI exposure of ${analysisExposure.toFixed(1)}/10.`;
+    const bullets = [
+      largest && topExposureNode
+        ? `${largest.title} is the largest worker pool in the set at ${fmtWorkers(largest.employment_workers)}, while ${topExposureNode.title} is the most exposed at ${topExposureNode.exposure.toFixed(1)}/10.`
+        : "There are not enough nodes in the set to describe worker scale and exposure leaders.",
+      topDemandNode && lowestConfidenceNode
+        ? `${topDemandNode.title} carries the strongest demand signal at ${topDemandNode.demand_index}/100, while ${lowestConfidenceNode.title} is the weakest-confidence node at ${confidencePct(lowestConfidenceNode)}.`
+        : `Set-level average confidence is ${Math.round(analysisConfidence * 100)}%.`,
+      categories.size
+        ? `${categories.size} categories are represented in this working set, which makes it useful for cross-role comparison rather than a single-node readout.`
+        : "The working set is focused on nodes without a populated category tag.",
+    ];
+    if (notedRows.length) {
+      bullets.push(`Local analyst notes are attached to ${notedRows.length} node${notedRows.length === 1 ? "" : "s"}, including ${notedRows.slice(0, 2).map(node => node.title).join(" and ")}.`);
+    } else if (analysisMode === "watchlist") {
+      bullets.push("No local analyst notes are attached to the current watchlist nodes yet.");
+    }
+    return {
+      kicker: "Analysis set brief",
+      title: `${analysisModeLabel()} briefing`,
+      summary,
+      bullets,
+      chips: analysisChips,
+    };
+  }
 
   if (!focus) {
     const summary = `This view covers ${rows.length} visible records representing ${fmtWorkersLong(totalWorkers)} workers with an employment-weighted AI exposure of ${weightedExposure.toFixed(1)}/10.`;
@@ -2116,6 +2566,134 @@ function renderBriefing() {
     .join("");
 }
 
+function reportPackData() {
+  const briefing = briefingData();
+  const compareRows = compareIds.map(id => nodesById.get(id)).filter(Boolean);
+  const analysis = analysisRows();
+  const watchlistRows = watchlistIds.map(id => nodesById.get(id)).filter(Boolean);
+  const watchlistNoted = watchlistRows.filter(node => (watchlistNotes[node.node_id] || "").trim());
+  const rows = statsRows();
+  const highExposureWorkers = rows.filter(row => row.exposure >= 7).reduce((sum, row) => sum + (row.employment_workers || 0), 0);
+  const chips = [
+    scopeDescriptionText(),
+    currentView === "scatter" ? "Scatter view" : "Treemap view",
+    `Filters: ${activeFilterSummary()}`,
+    `${watchlistRows.length} watchlist nodes`
+  ];
+  const bullets = [
+    briefing.summary,
+    highExposureWorkers
+      ? `${fmtWorkers(highExposureWorkers)} workers are currently visible in 7+ exposure nodes.`
+      : "No high-exposure workers are visible in the current scope."
+  ];
+
+  if (analysisMode && analysis.length) {
+    bullets.push(`${analysisModeLabel()} is active with ${analysis.length} node${analysis.length === 1 ? "" : "s"} in the working set.`);
+  }
+
+  if (compareRows.length === 2) {
+    const [left, right] = compareRows;
+    const exposureDelta = compareMetricDelta(left, right, "exposure");
+    const demandDelta = compareMetricDelta(left, right, "demand");
+    bullets.push(`${left.title} vs ${right.title}: ${exposureDelta.leader ? `${exposureDelta.leader.title} leads exposure by ${exposureDelta.deltaText}` : "exposure is level"}, and ${demandDelta.leader ? `${demandDelta.leader.title} leads demand by ${demandDelta.deltaText}` : "demand is level"}.`);
+  } else {
+    bullets.push("Compare is either empty or incomplete, so the report is centered on the current brief rather than a side-by-side delta.");
+  }
+
+  if (watchlistNoted.length) {
+    bullets.push(`Watchlist notes are present for ${watchlistNoted.length} node${watchlistNoted.length === 1 ? "" : "s"}, including ${watchlistNoted.slice(0, 3).map(node => node.title).join(", ")}.`);
+  } else if (watchlistRows.length) {
+    bullets.push("The watchlist is populated, but no local notes are attached to it yet.");
+  }
+
+  return {
+    kicker: "Analyst export",
+    title: `${currentScopeNode() ? currentScopeNode().title : "All India"} report pack`,
+    summary: "A consolidated export of the current scope, active brief, compare state, analysis set, and any stored watchlist notes.",
+    chips,
+    bullets,
+  };
+}
+
+function reportPackMarkdown() {
+  writeUrlState();
+  const report = reportPackData();
+  const briefing = briefingData();
+  const compareRows = compareIds.map(id => nodesById.get(id)).filter(Boolean);
+  const analysis = analysisRows();
+  const watchlistRows = watchlistIds.map(id => nodesById.get(id)).filter(Boolean);
+  const watchlistNoted = watchlistRows.filter(node => (watchlistNotes[node.node_id] || "").trim());
+
+  const sections = [
+    "# AI Exposure Analyst Report",
+    "",
+    `## ${report.title}`,
+    "",
+    report.summary,
+    "",
+    "### Highlights",
+    ...report.bullets.map(point => `- ${point}`),
+    "",
+    "### Current Briefing",
+    `- ${briefing.title}`,
+    `- ${briefing.summary}`,
+    ...briefing.bullets.map(point => `- ${point}`),
+  ];
+
+  if (analysisMode && analysis.length) {
+    sections.push(
+      "",
+      "### Analysis Set",
+      `- Source: ${analysisModeLabel()}`,
+      ...analysis.map(node => `- ${node.title}: ${compareMetricDisplay(node, "workers")} workers, ${compareMetricDisplay(node, "exposure")} exposure, ${compareMetricDisplay(node, "demand")} demand`)
+    );
+  }
+
+  if (compareRows.length === 2) {
+    const [left, right] = compareRows;
+    sections.push(
+      "",
+      "### Compare",
+      `- ${left.title} vs ${right.title}`,
+      ...["workers", "exposure", "demand", "confidence", "pay"].map(metric => {
+        const delta = compareMetricDelta(left, right, metric);
+        return `- ${compareMetricLabel(metric)}: ${delta.leader ? `${delta.leader.title} leads by ${delta.deltaText}` : "level"}`
+      })
+    );
+  }
+
+  if (watchlistRows.length) {
+    sections.push(
+      "",
+      "### Watchlist",
+      ...watchlistRows.map(node => `- ${node.title}${(watchlistNotes[node.node_id] || "").trim() ? `: ${(watchlistNotes[node.node_id] || "").trim()}` : ""}`)
+    );
+  }
+
+  sections.push(
+    "",
+    "### Context",
+    ...report.chips.map(chip => `- ${chip}`),
+    `- Link: ${window.location.href}`,
+    ""
+  );
+
+  return sections.join("\n");
+}
+
+function renderReportPack() {
+  const report = reportPackData();
+  document.getElementById("reportPackKicker").textContent = report.kicker;
+  document.getElementById("reportPackTitle").textContent = report.title;
+  document.getElementById("reportPackSummary").textContent = report.summary;
+  document.getElementById("reportPackMeta").innerHTML = report.chips
+    .map(chip => `<span class="briefing-chip">${chip}</span>`)
+    .join("");
+  document.getElementById("reportPackPoints").innerHTML = report.bullets
+    .map(point => `<div class="briefing-point">${point}</div>`)
+    .join("");
+}
+
 function sortedVisibleNodes(metric = tableMetric, direction = tableDirection) {
   const rows = currentDisplayNodes().slice();
   rows.sort((a, b) => {
@@ -2171,9 +2749,9 @@ function renderTable() {
         <div class="title">${node.title}</div>
         <div class="sub">${describeNodeLevel(node)}${node.canonical_nco2004_3d ? ` · ${node.canonical_nco2004_3d}` : ""}</div>
       </div>
-      <div class="table-cell">${fmtWorkers(node.employment_workers)}</div>
-      <div class="table-cell">${node.exposure.toFixed(1)}</div>
-      <div class="table-cell">${confidencePct(node)}</div>
+      <div class="table-cell"><span class="label">Workers</span><span>${fmtWorkers(node.employment_workers)}</span></div>
+      <div class="table-cell"><span class="label">Exposure</span><span>${node.exposure.toFixed(1)}</span></div>
+      <div class="table-cell"><span class="label">Confidence</span><span>${confidencePct(node)}</span></div>
     </div>
   `).join("");
 }
@@ -2189,16 +2767,60 @@ function addCurrentNodeToCompare() {
   refresh();
 }
 
+function compareMetricValue(node, metric) {
+  if (metric === "pay") return node.median_monthly_earnings_inr || 0;
+  return metricValue(node, metric);
+}
+
+function compareMetricDisplay(node, metric) {
+  if (metric === "workers") return fmtWorkersLong(node.employment_workers);
+  if (metric === "exposure") return `${node.exposure.toFixed(1)}/10`;
+  if (metric === "demand") return `${node.demand_index}/100`;
+  if (metric === "confidence") return confidencePct(node);
+  return `${fmtInr(node.median_monthly_earnings_inr)}/mo`;
+}
+
+function compareMetricLabel(metric) {
+  if (metric === "workers") return "Workers";
+  if (metric === "exposure") return "Exposure";
+  if (metric === "demand") return "Demand";
+  if (metric === "confidence") return "Confidence";
+  return "Pay";
+}
+
+function compareMetricDelta(left, right, metric) {
+  const leftValue = compareMetricValue(left, metric);
+  const rightValue = compareMetricValue(right, metric);
+  const delta = leftValue - rightValue;
+  const leader = delta === 0 ? null : (delta > 0 ? left : right);
+  const absolute = Math.abs(delta);
+  let deltaText = "";
+  if (metric === "workers") deltaText = fmtWorkersLong(absolute);
+  else if (metric === "exposure") deltaText = `${absolute.toFixed(1)} points`;
+  else if (metric === "demand") deltaText = `${absolute} points`;
+  else if (metric === "confidence") deltaText = `${Math.round(absolute * 100)} pts`;
+  else deltaText = `${fmtInr(absolute)}/mo`;
+  return { leftValue, rightValue, delta, leader, deltaText };
+}
+
 function renderCompare() {
   const compareList = document.getElementById("compareList");
+  const compareDeltaGrid = document.getElementById("compareDeltaGrid");
   const compareSummary = document.getElementById("compareSummary");
   const rows = compareIds.map(id => nodesById.get(id)).filter(Boolean);
 
   if (!rows.length) {
     compareList.innerHTML = '<div class="compare-card is-empty">Nothing pinned yet. Add the selected node or use a ranking row to focus first.</div>';
+    compareDeltaGrid.innerHTML = "";
     compareSummary.textContent = "Pin one or two nodes to compare their workers, pay, demand, exposure, and confidence.";
     return;
   }
+
+  const metricKeys = ["workers", "exposure", "demand", "confidence", "pay"];
+  const [left, right] = rows;
+  const deltas = rows.length === 2
+    ? Object.fromEntries(metricKeys.map(metric => [metric, compareMetricDelta(left, right, metric)]))
+    : {};
 
   compareList.innerHTML = rows.map(node => `
     <div class="compare-card">
@@ -2207,31 +2829,58 @@ function renderCompare() {
           <div class="compare-title">${node.title}</div>
           <div class="compare-sub">${describeNodeLevel(node)}${node.canonical_nco2004_3d ? ` · ${node.canonical_nco2004_3d}` : ""}</div>
         </div>
-        <button class="mini-button" data-compare-remove="${node.node_id}">Remove</button>
+        <div class="saved-view-actions">
+          <button class="mini-button" data-compare-focus="${node.node_id}">Focus</button>
+          <button class="mini-button" data-compare-remove="${node.node_id}">Remove</button>
+        </div>
       </div>
       <div class="compare-metrics">
-        <div class="metric-tile"><span class="label">Workers</span><span class="value">${fmtWorkersLong(node.employment_workers)}</span></div>
-        <div class="metric-tile"><span class="label">Exposure</span><span class="value">${node.exposure.toFixed(1)}/10</span></div>
-        <div class="metric-tile"><span class="label">Demand</span><span class="value">${node.demand_index}/100</span></div>
-        <div class="metric-tile"><span class="label">Confidence</span><span class="value">${confidencePct(node)}</span></div>
+        <div class="metric-tile ${rows.length === 2 && deltas.workers.leader?.node_id === node.node_id ? "is-leading" : ""}"><span class="label">Workers</span><span class="value">${fmtWorkersLong(node.employment_workers)}</span></div>
+        <div class="metric-tile ${rows.length === 2 && deltas.exposure.leader?.node_id === node.node_id ? "is-leading" : ""}"><span class="label">Exposure</span><span class="value">${node.exposure.toFixed(1)}/10</span></div>
+        <div class="metric-tile ${rows.length === 2 && deltas.demand.leader?.node_id === node.node_id ? "is-leading" : ""}"><span class="label">Demand</span><span class="value">${node.demand_index}/100</span></div>
+        <div class="metric-tile ${rows.length === 2 && deltas.confidence.leader?.node_id === node.node_id ? "is-leading" : ""}"><span class="label">Confidence</span><span class="value">${confidencePct(node)}</span></div>
       </div>
       <div class="compare-copy">${canonicalRowForNode(node)?.summary || node.summary || payload.meta.approximation_note || ""}</div>
     </div>
   `).join("");
 
   if (rows.length < 2) {
+    compareDeltaGrid.innerHTML = "";
     compareSummary.textContent = "Add one more node to see direct deltas.";
     return;
   }
 
-  const [left, right] = rows;
-  const exposureDelta = (left.exposure - right.exposure).toFixed(1);
-  const demandDelta = left.demand_index - right.demand_index;
-  const payDelta = left.median_monthly_earnings_inr - right.median_monthly_earnings_inr;
-  compareSummary.textContent =
-    `${left.title} vs ${right.title}: ${exposureDelta > 0 ? "+" : ""}${exposureDelta} exposure, ` +
-    `${demandDelta > 0 ? "+" : ""}${demandDelta} demand, ` +
-    `${payDelta > 0 ? "+" : ""}${fmtInr(payDelta)} monthly pay difference.`;
+  compareDeltaGrid.innerHTML = metricKeys.map(metric => {
+    const delta = deltas[metric];
+    const maxValue = Math.max(delta.leftValue, delta.rightValue, 1);
+    const leftWidth = `${(delta.leftValue / maxValue) * 100}%`;
+    const rightWidth = `${(delta.rightValue / maxValue) * 100}%`;
+    const leadLine = delta.leader
+      ? `${delta.leader.title} leads by ${delta.deltaText}.`
+      : "Both nodes are level on this metric.";
+    return `
+      <div class="compare-delta-card">
+        <div class="compare-delta-kicker">${compareMetricLabel(metric)}</div>
+        <div class="compare-delta-lead">${leadLine}</div>
+        <div class="compare-delta-bars">
+          <div class="compare-delta-track">
+            <div class="compare-delta-node"><span class="title">${left.title}</span><span>${compareMetricDisplay(left, metric)}</span></div>
+            <div class="compare-delta-bar"><div class="compare-delta-fill left" style="width:${leftWidth}"></div></div>
+          </div>
+          <div class="compare-delta-track">
+            <div class="compare-delta-node"><span class="title">${right.title}</span><span>${compareMetricDisplay(right, metric)}</span></div>
+            <div class="compare-delta-bar"><div class="compare-delta-fill right" style="width:${rightWidth}"></div></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const leadBits = metricKeys.map(metric => {
+    const leader = deltas[metric].leader;
+    return leader ? `${leader.title} on ${compareMetricLabel(metric).toLowerCase()}` : null;
+  }).filter(Boolean);
+  compareSummary.textContent = `${left.title} vs ${right.title}: direct deltas are broken out below, with current leads favoring ${leadBits.join(", ")}.`;
 }
 
 function focusNode(nodeId) {
@@ -2333,6 +2982,10 @@ function savedViewSummary(view) {
   if (view.category) bits.push(`Category: ${prettifyCategory(view.category)}`);
   if (view.color === "confidence") bits.push("Confidence colors");
   if ((view.compare || "").length) bits.push("Compare pinned");
+  if (view.analysis_mode === "manual") bits.push(`Analysis set: ${view.analysis_count || 0} nodes`);
+  else if (view.analysis_mode === "watchlist") bits.push("Watchlist brief");
+  else if (view.analysis_mode === "compare") bits.push("Compare brief");
+  else if (view.analysis_mode === "focus") bits.push("Focus brief");
   return bits.join(" · ");
 }
 
@@ -2408,6 +3061,11 @@ function applyStateFromParams(params) {
     .split(",")
     .map(value => value.trim())
     .filter(Boolean);
+  analysisMode = params.get("analysis_mode") || "";
+  analysisIds = (params.get("analysis_ids") || "")
+    .split(",")
+    .map(value => value.trim())
+    .filter(Boolean);
 }
 
 function exportRows() {
@@ -2453,6 +3111,8 @@ function currentStateParams() {
   if (tableMetric !== "workers") params.set("table", tableMetric);
   if (tableDirection !== "desc") params.set("direction", tableDirection);
   if (compareIds.length) params.set("compare", compareIds.join(","));
+  if (analysisMode) params.set("analysis_mode", analysisMode);
+  if (analysisMode === "manual" && analysisIds.length) params.set("analysis_ids", analysisIds.join(","));
   return params;
 }
 
@@ -2487,6 +3147,7 @@ function validateStateAgainstPayload() {
   if (currentScopeId && !nodesById.has(currentScopeId)) currentScopeId = null;
   if (selectedNodeId && !nodesById.has(selectedNodeId)) selectedNodeId = null;
   compareIds = compareIds.filter(id => nodesById.has(id)).slice(0, 2);
+  validateAnalysisSet();
 }
 
 function writeUrlState() {
@@ -2516,6 +3177,8 @@ function saveCurrentView() {
     category: categoryFilter,
     color: colorMode,
     compare: compareIds.join(","),
+    analysis_mode: analysisMode,
+    analysis_count: analysisRows().length,
     saved_at: now,
   };
 
@@ -2629,6 +3292,28 @@ function downloadBriefing() {
   const subject = briefingContextNode()?.title || currentScopeLabel();
   downloadText(`${fileSlug(subject)}-briefing.md`, "text/markdown;charset=utf-8", briefingMarkdown());
   setStatus(`Downloaded briefing note for ${title}.`, false);
+}
+
+async function copyReportPack() {
+  const markdown = reportPackMarkdown();
+  try {
+    await navigator.clipboard.writeText(markdown);
+    setStatus("Copied the analyst report pack.", false);
+  } catch (error) {
+    const input = document.createElement("textarea");
+    input.value = markdown;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+    setStatus("Copied the analyst report pack.", false);
+  }
+}
+
+function downloadReportPack() {
+  const subject = currentScopeNode()?.title || "all-india";
+  downloadText(`${fileSlug(subject)}-report-pack.md`, "text/markdown;charset=utf-8", reportPackMarkdown());
+  setStatus("Downloaded the analyst report pack.", false);
 }
 
 function layoutTreemap() {
@@ -2897,7 +3582,9 @@ function refresh() {
   renderDetails();
   renderSignals();
   renderWatchlist();
+  renderAnalysisSet();
   renderBriefing();
+  renderReportPack();
   renderCompare();
   renderRankings();
   renderInsights();
@@ -2908,18 +3595,48 @@ function refresh() {
   draw();
 }
 
-canvas.addEventListener("mousemove", event => {
+function hoveredNodeKey() {
+  return hovered ? hovered.node_id : "";
+}
+
+function handleCanvasPointerMove(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
+  const previousHover = hoveredNodeKey();
   pick(x, y);
-  draw();
-  renderDetails();
-  if (hovered) showTooltip(hovered, event.clientX, event.clientY);
+  if (hoveredNodeKey() !== previousHover) {
+    draw();
+    renderDetails();
+  }
+  if (hovered) showTooltip(hovered, clientX, clientY);
   else hideTooltip();
+}
+
+function queueCanvasPointerMove(clientX, clientY) {
+  pendingPointer = { clientX, clientY };
+  if (pointerFrame) return;
+  pointerFrame = requestAnimationFrame(() => {
+    pointerFrame = 0;
+    const pointer = pendingPointer;
+    pendingPointer = null;
+    if (!pointer) return;
+    handleCanvasPointerMove(pointer.clientX, pointer.clientY);
+  });
+}
+
+function clearCanvasPointerQueue() {
+  if (pointerFrame) cancelAnimationFrame(pointerFrame);
+  pointerFrame = 0;
+  pendingPointer = null;
+}
+
+canvas.addEventListener("mousemove", event => {
+  queueCanvasPointerMove(event.clientX, event.clientY);
 });
 
 canvas.addEventListener("mouseleave", () => {
+  clearCanvasPointerQueue();
   hovered = null;
   hideTooltip();
   renderDetails();
@@ -3025,8 +3742,28 @@ document.getElementById("clearWatchlist").addEventListener("click", () => {
   watchlistNotes = {};
   persistWatchlist();
   persistWatchlistNotes();
-  renderWatchlist();
+  refresh();
   setStatus("Cleared the watchlist.", false);
+});
+
+document.getElementById("analysisFromFocus").addEventListener("click", () => {
+  setAnalysisMode("focus");
+});
+
+document.getElementById("analysisFromCompare").addEventListener("click", () => {
+  setAnalysisMode("compare");
+});
+
+document.getElementById("analysisFromWatchlist").addEventListener("click", () => {
+  setAnalysisMode("watchlist");
+});
+
+document.getElementById("addFocusedToAnalysis").addEventListener("click", () => {
+  addFocusedToAnalysisSet();
+});
+
+document.getElementById("clearAnalysis").addEventListener("click", () => {
+  clearAnalysisSet();
 });
 
 document.getElementById("copyWatchlist").addEventListener("click", async () => {
@@ -3043,6 +3780,14 @@ document.getElementById("copyBriefing").addEventListener("click", async () => {
 
 document.getElementById("downloadBriefing").addEventListener("click", () => {
   downloadBriefing();
+});
+
+document.getElementById("copyReportPack").addEventListener("click", async () => {
+  await copyReportPack();
+});
+
+document.getElementById("downloadReportPack").addEventListener("click", () => {
+  downloadReportPack();
 });
 
 document.getElementById("saveCurrentView").addEventListener("click", () => {
@@ -3064,6 +3809,14 @@ rankingMetricSelect.addEventListener("change", event => {
 });
 
 document.getElementById("compareList").addEventListener("click", event => {
+  const focusButton = event.target.closest("[data-compare-focus]");
+  if (focusButton) {
+    const node = nodesById.get(focusButton.dataset.compareFocus);
+    if (!node) return;
+    ensureNodeVisible(node);
+    focusNode(node.node_id);
+    return;
+  }
   const removeButton = event.target.closest("[data-compare-remove]");
   if (!removeButton) return;
   compareIds = compareIds.filter(id => id !== removeButton.dataset.compareRemove);
@@ -3116,7 +3869,7 @@ document.getElementById("watchlistList").addEventListener("click", event => {
     delete watchlistNotes[removeButton.dataset.watchRemove];
     persistWatchlist();
     persistWatchlistNotes();
-    renderWatchlist();
+    refresh();
   }
 });
 
@@ -3125,6 +3878,28 @@ document.getElementById("watchlistList").addEventListener("input", event => {
   if (!textarea) return;
   watchlistNotes[textarea.dataset.watchNote] = textarea.value;
   persistWatchlistNotes();
+  if (analysisMode) {
+    renderAnalysisSet();
+    renderBriefing();
+  }
+});
+
+document.getElementById("analysisSetList").addEventListener("click", event => {
+  const focusButton = event.target.closest("[data-analysis-focus]");
+  if (focusButton) {
+    const node = nodesById.get(focusButton.dataset.analysisFocus);
+    if (!node) return;
+    ensureNodeVisible(node);
+    focusNode(node.node_id);
+    return;
+  }
+
+  const removeButton = event.target.closest("[data-analysis-remove]");
+  if (removeButton) {
+    analysisIds = analysisIds.filter(id => id !== removeButton.dataset.analysisRemove);
+    validateAnalysisSet();
+    refresh();
+  }
 });
 
 document.getElementById("tableList").addEventListener("click", event => {
