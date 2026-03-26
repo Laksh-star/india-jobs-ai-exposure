@@ -1,0 +1,41 @@
+{
+  "name": "india-jobs-pipeline",
+  "version": "0.1.0",
+  "description": "Run, validate, and summarize the India jobs AI exposure pipeline.",
+  "author": {
+    "name": "[TODO: Author Name]",
+    "email": "[TODO: author@example.com]",
+    "url": "[TODO: https://github.com/author]"
+  },
+  "homepage": "[TODO: https://github.com/author/india-jobs-pipeline]",
+  "repository": "[TODO: https://github.com/author/india-jobs-pipeline]",
+  "license": "MIT",
+  "keywords": [
+    "india",
+    "jobs",
+    "pipeline",
+    "ai-exposure",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "India Jobs Pipeline",
+    "shortDescription": "Rebuild and validate the India jobs dataset and static site.",
+    "longDescription": "Runs the seed or full India jobs pipeline, validates generated outputs, and summarizes changes in generated dataset and site artifacts for this repository.",
+    "developerName": "[TODO: Developer Name]",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "[TODO: https://github.com/author/india-jobs-pipeline]",
+    "privacyPolicyURL": "[TODO: https://example.com/privacy]",
+    "termsOfServiceURL": "[TODO: https://example.com/terms]",
+    "defaultPrompt": [
+      "Run the India seed pipeline and validate outputs.",
+      "Rebuild site data and summarize what changed.",
+      "Check whether this repo is ready for a Pages deploy."
+    ],
+    "brandColor": "#0F766E"
+  }
+}
